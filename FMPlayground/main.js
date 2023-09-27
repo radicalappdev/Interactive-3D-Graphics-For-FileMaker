@@ -1,24 +1,44 @@
-import './style.css'
-import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.js'
+import * as BABYLON from "babylonjs";
+import * as GUI from "babylonjs-gui";
+BABYLON.GUI = GUI; // assing GUI to BABYLON.GUI to match the usage in the playgrounds
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+console.log("main.js loaded");
 
-setupCounter(document.querySelector('#counter'))
+window.addEventListener("DOMContentLoaded", async function () {
+  // get the canvas with id "bjsCanvas"
+  var canvas = document.getElementById("bjsCanvas");
+  var engine = new BABYLON.Engine(canvas, true);
+
+  var createScene = async function () {
+    var scene = new BABYLON.Scene(engine);
+    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+    camera.attachControl(canvas, true);
+    camera.setTarget(BABYLON.Vector3.Zero());
+    camera.attachControl(canvas, false);
+
+    // create a basic light, aiming 0,1,0 - meaning, to the sky
+    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+
+    var material = new BABYLON.StandardMaterial(scene);
+    material.alpha = 1;
+    material.diffuseColor = new BABYLON.Color3.FromHexString("#9ba8b8");
+
+    var cube = BABYLON.MeshBuilder.CreateBox("box", {
+      height: 1,
+      width: 1,
+      depth: 1
+    });
+
+    return scene;
+  };
+
+  // Start the render loop
+  var scene = await createScene();
+  engine.runRenderLoop(function () {
+    scene.render();
+  });
+
+  window.addEventListener("resize", function () {
+    engine.resize();
+  });
+});
