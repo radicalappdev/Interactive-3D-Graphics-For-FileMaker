@@ -18,6 +18,7 @@ This simple project will get you started with Babylon JS in FileMaker.
 - style.css - the main css file - just a class for the canvas
 - main.js - This file will import Babylon JS and GUI, then create a scene.
 - main-tree-shaking.js - This alternative file does the same thing as main.js It is written to import for tree shaking. See build notes
+- ExampleWidgets (parent folder) is a FileMaker file with a few examples of how to use the widgets.
 
 ## Build Notes
 

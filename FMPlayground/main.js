@@ -43,7 +43,7 @@ const createScene = async () => {
 
   // Then add a textblock to the overlay.
   const title = new GUI.TextBlock("gui-title");
-  title.text = "FMPlayground";
+  title.text = "FMPlayground TEST";
   title.color = "white";
   title.fontSize = "32px";
   title.fontWeight = "bold";
@@ -61,23 +61,23 @@ const createScene = async () => {
 };
 
 const resizeHelpers = (engine) => {
-  engine.resize();
+  console.log("resizeHelpers");
+  if (engine) {
+    engine.resize();
+  }
 };
 
 // When the DOM is ready, run the createScene function
 window.addEventListener("DOMContentLoaded", async function () {
-  // Start the render loop
   const { scene, engine } = await createScene();
+  // Start the render loop
 
   engine.runRenderLoop(function () {
     scene.render();
   });
 
   // Resize the engine on window resize
-  window.addEventListener("resize", resizeHelpers(engine));
-
-  // Remove the event listener when the DOM is unloaded
-  window.addEventListener("unload", function () {
-    window.removeEventListener("resize", resizeHelpers(engine));
+  window.addEventListener("resize", function () {
+    engine.resize();
   });
 });
