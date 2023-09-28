@@ -124,9 +124,11 @@ const createScene = async () => {
   mode.onPointerUpObservable.add(() => {
     if (cam.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
       cam.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
+      cam.inputs.addMouseWheel();
       mode.textBlock.text = "Perspective";
     } else {
       cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+      cam.inputs.removeByType("ArcRotateCameraMouseWheelInput");
       mode.textBlock.text = "Orthographic";
     }
   });
@@ -152,6 +154,7 @@ const createScene = async () => {
     title.text = "Select an object";
     description.text = "";
     advancedTexture.markAsDirty();
+    focusedMesh.showBoundingBox = false;
   });
   advancedTexture.addControl(resetCamera);
 
@@ -414,9 +417,13 @@ const createScene = async () => {
           if (cam.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
             mode.textBlock.text = "Perspective";
             cam.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
+            // enable zooming with the mouse wheel
+            cam.inputs.addMouseWheel();
           } else {
             mode.textBlock.text = "Orthographic";
             cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+            // disable zooming with the mouse wheel
+            cam.inputs.removeByType("ArcRotateCameraMouseWheelInput");
           }
         }
         if (kbInfo.event.key === "g") {
@@ -455,6 +462,7 @@ const createScene = async () => {
           title.text = "Select an object";
           description.text = "";
           advancedTexture.markAsDirty();
+          focusedMesh.showBoundingBox = false;
         }
         break;
     }
