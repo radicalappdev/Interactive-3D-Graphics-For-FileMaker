@@ -15,6 +15,11 @@ const createScene = async () => {
   const scene = new BABYLON.Scene(engine);
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
   scene.clearColor = BABYLON.Color3.FromHexString("#1e293b");
+  const boundingBoxRenderer = scene.getBoundingBoxRenderer();
+  if (boundingBoxRenderer) {
+    boundingBoxRenderer.frontColor.set(0.1, 1, 0.1);
+    boundingBoxRenderer.backColor.set(0.1, 1, 0.1);
+  }
 
   const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
 
@@ -103,7 +108,6 @@ const createScene = async () => {
   toolbar.width = "25%";
   toolbar.height = "80px";
   toolbar.zIndex = -1;
-  // toolbar.background = "#334155";
   toolbar.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
   advancedTexture.addControl(toolbar);
 
@@ -135,7 +139,6 @@ const createScene = async () => {
     cam.orthoBottom = -cam.orthoTop;
     cam.orthoLeft = engine.getRenderWidth() / 4 / 100;
     cam.orthoRight = -cam.orthoLeft;
-    console.info("ortho", cam.orthoTop, cam.orthoBottom, cam.orthoLeft, cam.orthoRight);
   }
 
   //Create a basic light
@@ -339,13 +342,22 @@ const createScene = async () => {
             grid.visibility = 1;
           }
         }
-        // if (kbInfo.event.key === "i") {
-        //   if (inspector.isVisible) {
-        //     inspector.isVisible = false;
-        //   } else {
-        //     inspector.isVisible = true;
-        //   }
-        // }
+        if (kbInfo.event.key === "i") {
+          if (inspector.isVisible) {
+            inspector.isVisible = false;
+          } else {
+            inspector.isVisible = true;
+          }
+        }
+        if (kbInfo.event.key === "o") {
+          if (inspector.width == "25%") {
+            inspector.width = "50%";
+            advancedTexture.markAsDirty();
+          } else {
+            inspector.width = "25%";
+            advancedTexture.markAsDirty();
+          }
+        }
         if (kbInfo.event.key === "Escape") {
           cam.setTarget(grid);
           title.text = "Select an object";
