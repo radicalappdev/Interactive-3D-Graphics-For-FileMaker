@@ -60,18 +60,10 @@ const createScene = async () => {
   return { scene, engine };
 };
 
-const resizeHelpers = (engine) => {
-  console.log("resizeHelpers");
-  if (engine) {
-    engine.resize();
-  }
-};
-
 // When the DOM is ready, run the createScene function
 window.addEventListener("DOMContentLoaded", async function () {
   const { scene, engine } = await createScene();
   // Start the render loop
-
   engine.runRenderLoop(function () {
     scene.render();
   });
