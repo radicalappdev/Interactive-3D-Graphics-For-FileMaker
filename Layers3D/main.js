@@ -52,10 +52,11 @@ const createScene = async () => {
   scroll.color = "#3e4a5d";
   scroll.background = "#3e4a5d";
   scroll.width = "100%";
+  scroll.height = `${engine.getRenderHeight() - 80}px`; // a hack to size the scroll viewer to the window while not using percentages in the stack panel
   scroll.barSize = 20;
   scroll.barColor = "#53637b";
   scroll.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-  scroll.wheelPrecision = 0.05;
+  scroll.wheelPrecision = 0.005;
   scroll.onPointerEnterObservable.add((ev) => {
     cam.inputs.removeByType("ArcRotateCameraMouseWheelInput");
   });
@@ -214,6 +215,11 @@ const createScene = async () => {
           title.text = "Layout";
           description.text = layersData;
         }
+        // scroll to the top of the scroll viewer
+        description.resizeToFit = true;
+        scroll.verticalBar.value = 0;
+        scroll.horizontalBar.value = 0;
+        advancedTexture.markAsDirty();
       })
     );
     // add a hover action
@@ -357,7 +363,7 @@ const createScene = async () => {
         }
         if (kbInfo.event.key === "o") {
           if (inspector.width == "25%") {
-            inspector.width = "50%";
+            inspector.width = "75%";
             advancedTexture.markAsDirty();
           } else {
             inspector.width = "25%";
