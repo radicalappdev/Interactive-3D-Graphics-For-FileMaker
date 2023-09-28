@@ -8,6 +8,8 @@ const createScene = async () => {
   // get the canvas from the DOM
   const canvas = document.getElementById("bjsCanvas");
 
+  let focusedMesh = null; // just a hack to keep track of the focused mesh
+
   // Create the enging and scene
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
@@ -100,14 +102,14 @@ const createScene = async () => {
   const toolbar = new GUI.StackPanel("gui-inspector");
   toolbar.width = "25%";
   toolbar.height = "80px";
-  toolbar.background = "#334155";
-  toolbar.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-  toolbar.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+  toolbar.zIndex = -1;
+  // toolbar.background = "#334155";
+  toolbar.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
   advancedTexture.addControl(toolbar);
 
   // Add a text block called focus that can show the name of the object we are hovering over
   const focus = new GUI.TextBlock("gui-focus");
-  focus.text = "none";
+  focus.text = "";
   focus.color = "white";
   focus.fontSize = "32px";
   focus.fontWeight = "bold";
@@ -123,14 +125,17 @@ const createScene = async () => {
   toolbar.addControl(focus);
 
   // TODO: Add constrains to the camera
+  // TODO: Offset the camera
   // Create a camera
   const cam = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, new BABYLON.Vector3(-5, -3, 0), scene);
   cam.attachControl(scene.getEngine().getRenderingCanvas(), true);
   if (cam) {
+    // cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+    // TODO: calculate the ortho size based on current engine size
     cam.orthoTop = 6;
     cam.orthoBottom = -6;
-    cam.orthoLeft = -6;
-    cam.orthoRight = 6;
+    cam.orthoLeft = -12;
+    cam.orthoRight = 12;
   }
 
   //Create a basic light
@@ -190,6 +195,13 @@ const createScene = async () => {
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (evt) => {
         console.log("Clicked on", node.getAttribute("type"), deep, bounds);
         cam.setTarget(layerBox);
+        // TODO: set a focus style on the mesh. An outline or something?
+        if (focusedMesh) {
+          focusedMesh.showBoundingBox = false;
+        }
+        layerBox.showBoundingBox = true;
+        focusedMesh = layerBox;
+
         if (node.getAttribute("type")) {
           if (title) {
             title.text = node.getAttribute("type");
@@ -205,6 +217,12 @@ const createScene = async () => {
     layerBox.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (evt) => {
         focus.text = node.getAttribute("type") ?? "";
+      })
+    );
+    // on mouse out, reset the focus text
+    layerBox.actionManager.registerAction(
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (evt) => {
+        focus.text = "";
       })
     );
   };
@@ -281,7 +299,9 @@ const createScene = async () => {
   objectNodes.forEach(processNodes);
 
   // Create the layout layer - FileMaker calculates the bounds of the layout objects, not the layout itself
-  const layoutNode = layersDoc.querySelector("Layout");
+  let layoutNode = layersDoc.querySelector("Layout");
+  // Append a type to the layout node so we can use it in the inspector and focus displays
+  layoutNode.setAttribute("type", "Layout");
   if (layoutNode) {
     const layoutTop = Number(layoutNode.getAttribute("enclosingRectTop") ?? 0);
     const layoutLeft = Number(layoutNode.getAttribute("enclosingRectLeft") ?? 0);
@@ -319,22 +339,13 @@ const createScene = async () => {
             grid.visibility = 1;
           }
         }
-        if (kbInfo.event.key === "i") {
-          if (inspector.isVisible) {
-            inspector.isVisible = false;
-          } else {
-            inspector.isVisible = true;
-          }
-        }
-        if (kbInfo.event.key === "o") {
-          if (inspector.width == "25%") {
-            inspector.width = "50%";
-            advancedTexture.markAsDirty();
-          } else {
-            inspector.width = "25%";
-            advancedTexture.markAsDirty();
-          }
-        }
+        // if (kbInfo.event.key === "i") {
+        //   if (inspector.isVisible) {
+        //     inspector.isVisible = false;
+        //   } else {
+        //     inspector.isVisible = true;
+        //   }
+        // }
         if (kbInfo.event.key === "Escape") {
           cam.setTarget(grid);
           title.text = "Select an object";
