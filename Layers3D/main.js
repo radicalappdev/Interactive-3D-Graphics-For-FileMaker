@@ -97,6 +97,32 @@ const createScene = async () => {
   });
   advancedTexture.addControl(mode);
 
+  const toolbar = new GUI.StackPanel("gui-inspector");
+  toolbar.width = "25%";
+  toolbar.height = "80px";
+  toolbar.background = "#334155";
+  toolbar.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  toolbar.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+  advancedTexture.addControl(toolbar);
+
+  // Add a text block called focus that can show the name of the object we are hovering over
+  const focus = new GUI.TextBlock("gui-focus");
+  focus.text = "none";
+  focus.color = "white";
+  focus.fontSize = "32px";
+  focus.fontWeight = "bold";
+  focus.textWrapping = true;
+  focus.height = "80px";
+  focus.paddingTop = "20px";
+  focus.paddingBottom = "16px";
+  focus.paddingLeft = "16px";
+  focus.paddingRight = "16px";
+  focus.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+  focus.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  focus.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+  toolbar.addControl(focus);
+
+  // TODO: Add constrains to the camera
   // Create a camera
   const cam = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, new BABYLON.Vector3(-5, -3, 0), scene);
   cam.attachControl(scene.getEngine().getRenderingCanvas(), true);
@@ -173,6 +199,12 @@ const createScene = async () => {
           title.text = "Layout";
           description.text = layersData;
         }
+      })
+    );
+    // add a hover action
+    layerBox.actionManager.registerAction(
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (evt) => {
+        focus.text = node.getAttribute("type") ?? "";
       })
     );
   };
