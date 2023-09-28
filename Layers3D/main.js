@@ -57,6 +57,9 @@ const createScene = async () => {
   toggleSize.cornerRadius = 0;
   toggleSize.thickness = 0;
   toggleSize.right = "25%";
+  toggleSize.paddingTopInPixels = 10;
+  toggleSize.paddingBottomInPixels = 10;
+  toggleSize.paddingRightInPixels = 10;
   toggleSize.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   toggleSize.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
   toggleSize.onPointerUpObservable.add(() => {
@@ -104,6 +107,7 @@ const createScene = async () => {
   description.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
   description.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   description.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  description.resizeToFit = true;
   scroll.addControl(description);
 
   // Add a button called mode to the top left corner of the advancedTexture
@@ -128,7 +132,29 @@ const createScene = async () => {
   });
   advancedTexture.addControl(mode);
 
-  // Add a button to toggle the inspector
+  const resetCamera = GUI.Button.CreateSimpleButton("gui-reset", "Reset Camera");
+  resetCamera.textBlock.fontSize = "24px";
+  resetCamera.width = "200px";
+  resetCamera.height = "80px";
+  resetCamera.color = "white";
+  resetCamera.background = "#3e4a5d";
+  resetCamera.cornerRadius = 0;
+  resetCamera.thickness = 0;
+  resetCamera.top = "82 px";
+  resetCamera.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  resetCamera.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  resetCamera.onPointerUpObservable.add(() => {
+    cam.setTarget(grid);
+
+    cam.alpha = Math.PI / 2;
+    cam.beta = Math.PI / 2;
+    cam.radius = 15;
+    title.text = "Select an object";
+    description.text = "";
+    advancedTexture.markAsDirty();
+  });
+  advancedTexture.addControl(resetCamera);
+
   const toggleInspector = GUI.Button.CreateSimpleButton("gui-inspector", "Inspector");
   toggleInspector.textBlock.fontSize = "24px";
   toggleInspector.width = "200px";
@@ -137,7 +163,7 @@ const createScene = async () => {
   toggleInspector.background = "#3e4a5d";
   toggleInspector.cornerRadius = 0;
   toggleInspector.thickness = 0;
-  toggleInspector.top = "82px";
+  toggleInspector.top = "164px";
   toggleInspector.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   toggleInspector.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   toggleInspector.onPointerUpObservable.add(() => {
@@ -422,6 +448,10 @@ const createScene = async () => {
         }
         if (kbInfo.event.key === "Escape") {
           cam.setTarget(grid);
+
+          cam.alpha = Math.PI / 2;
+          cam.beta = Math.PI / 2;
+          cam.radius = 15;
           title.text = "Select an object";
           description.text = "";
           advancedTexture.markAsDirty();
