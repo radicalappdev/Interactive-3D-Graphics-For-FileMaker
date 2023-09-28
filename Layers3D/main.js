@@ -175,17 +175,18 @@ const createScene = async () => {
   focus.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
   toolbar.addControl(focus);
 
-  // TODO: Add constrains to the camera
-  // TODO: Offset the camera
   // Create a camera
   const cam = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, new BABYLON.Vector3(-5, -3, 0), scene);
   cam.attachControl(scene.getEngine().getRenderingCanvas(), true);
+  cam.wheelDeltaPercentage = 0.01;
+  cam.lowerRadiusLimit = 1;
+  cam.upperRadiusLimit = 100;
   if (cam) {
     // Calculate the ortho size based on current engine size
     cam.orthoTop = engine.getRenderHeight() / 4 / 100;
-    cam.orthoBottom = -cam.orthoTop;
-    cam.orthoLeft = engine.getRenderWidth() / 4 / 100;
-    cam.orthoRight = -cam.orthoLeft;
+    cam.orthoBottom = -(engine.getRenderHeight() / 4 / 100);
+    cam.orthoLeft = -(engine.getRenderWidth() / 4 / 100);
+    cam.orthoRight = engine.getRenderWidth() / 4 / 100;
   }
 
   //Create a basic light
@@ -202,7 +203,7 @@ const createScene = async () => {
   gridMap.mainColor = BABYLON.Color3.FromHexString("#f1f5f9");
 
   let background;
-  const grid = BABYLON.MeshBuilder.CreateGround("grid", { width: 100, height: 60 }, scene);
+  const grid = BABYLON.MeshBuilder.CreateGround("grid", { width: 100, height: 100 }, scene);
   grid.rotation.x = Math.PI / 2;
   grid.position = new BABYLON.Vector3(-5, -3, -2);
   grid.material = gridMap;
@@ -245,7 +246,7 @@ const createScene = async () => {
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (evt) => {
         console.log("Clicked on", node.getAttribute("type"), deep, bounds);
         cam.setTarget(layerBox);
-        // TODO: set a focus style on the mesh. An outline or something?
+        // Hide the bounding box on the previously focused mesh
         if (focusedMesh) {
           focusedMesh.showBoundingBox = false;
         }
@@ -282,7 +283,6 @@ const createScene = async () => {
     );
   };
 
-  // TODO: Rename this
   // Function to log object type and count of ancestor Object nodes
   function processNodes(node) {
     if (node.nodeName === "Object") {
@@ -446,10 +446,10 @@ window.addEventListener("DOMContentLoaded", async function () {
     engine.resize();
     const scene = engine.scenes[0];
     const cam = scene.cameras[0];
-    cam.orthoTop = engine.getRenderHeight() / 2 / 100;
-    cam.orthoBottom = -cam.orthoTop;
-    cam.orthoLeft = engine.getRenderWidth() / 2 / 100;
-    cam.orthoRight = -cam.orthoLeft;
+    cam.orthoTop = engine.getRenderHeight() / 4 / 100;
+    cam.orthoBottom = -(engine.getRenderHeight() / 4 / 100);
+    cam.orthoLeft = -(engine.getRenderWidth() / 4 / 100);
+    cam.orthoRight = engine.getRenderWidth() / 4 / 100;
   });
 
   // A simple function that can be called from FileMaker to make a change in the scene
