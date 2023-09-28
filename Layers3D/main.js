@@ -47,6 +47,29 @@ const createScene = async () => {
   title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   inspector.addControl(title);
 
+  // add a button to the inspector to toggle the size
+  const toggleSize = GUI.Button.CreateSimpleButton("gui-size", "Toggle Size");
+  toggleSize.textBlock.fontSize = "24px";
+  toggleSize.width = "200px";
+  toggleSize.height = "80px";
+  toggleSize.color = "white";
+  toggleSize.background = "#3e4a5d";
+  toggleSize.cornerRadius = 0;
+  toggleSize.thickness = 0;
+  toggleSize.right = "25%";
+  toggleSize.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  toggleSize.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+  toggleSize.onPointerUpObservable.add(() => {
+    if (inspector.width == "25%") {
+      inspector.width = "75%";
+      advancedTexture.markAsDirty();
+    } else {
+      inspector.width = "25%";
+      advancedTexture.markAsDirty();
+    }
+  });
+  advancedTexture.addControl(toggleSize);
+
   const scroll = new GUI.ScrollViewer("gui-scroll");
   scroll.thickness = 10;
   scroll.color = "#3e4a5d";
@@ -104,6 +127,29 @@ const createScene = async () => {
     }
   });
   advancedTexture.addControl(mode);
+
+  // Add a button to toggle the inspector
+  const toggleInspector = GUI.Button.CreateSimpleButton("gui-inspector", "Inspector");
+  toggleInspector.textBlock.fontSize = "24px";
+  toggleInspector.width = "200px";
+  toggleInspector.height = "80px";
+  toggleInspector.color = "white";
+  toggleInspector.background = "#3e4a5d";
+  toggleInspector.cornerRadius = 0;
+  toggleInspector.thickness = 0;
+  toggleInspector.top = "82px";
+  toggleInspector.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  toggleInspector.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  toggleInspector.onPointerUpObservable.add(() => {
+    if (inspector.isVisible) {
+      inspector.isVisible = false;
+      toggleSize.isVisible = false;
+    } else {
+      inspector.isVisible = true;
+      toggleSize.isVisible = true;
+    }
+  });
+  advancedTexture.addControl(toggleInspector);
 
   const toolbar = new GUI.StackPanel("gui-inspector");
   toolbar.width = "25%";
@@ -357,11 +403,15 @@ const createScene = async () => {
         if (kbInfo.event.key === "i") {
           if (inspector.isVisible) {
             inspector.isVisible = false;
+            toggleSize.isVisible = false;
           } else {
             inspector.isVisible = true;
+            toggleSize.isVisible = true;
           }
         }
         if (kbInfo.event.key === "o") {
+          inspector.isVisible = true;
+          toggleSize.isVisible = true;
           if (inspector.width == "25%") {
             inspector.width = "75%";
             advancedTexture.markAsDirty();
