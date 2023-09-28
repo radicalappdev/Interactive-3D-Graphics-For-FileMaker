@@ -16,6 +16,7 @@
   width: 100%;
   height: calc(100vh - 2rem);
   padding: none;
+  outline: none;
 }
 
 .credit {
@@ -26,7 +27,7 @@
   height: 2rem;
   width: 100vw;
   display: flex;
-  background-color: #f24c4c;
+  background-color: #334155;
   color: white;
   justify-content: center;
   align-items: center;

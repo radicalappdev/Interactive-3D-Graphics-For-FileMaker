@@ -13,13 +13,14 @@ const createScene = async () => {
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
+  scene.clearColor = BABYLON.Color3.FromHexString("#1e293b");
 
   const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
 
   const inspector = new GUI.StackPanel("gui-inspector");
   inspector.width = "25%";
   inspector.height = "100%";
-  inspector.background = BABYLON.Color3.FromHexString("#1e293b");
+  inspector.background = "#334155";
   inspector.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   inspector.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
   advancedTexture.addControl(inspector);
@@ -35,7 +36,7 @@ const createScene = async () => {
   title.paddingBottom = "16px";
   title.paddingLeft = "16px";
   title.paddingRight = "16px";
-  title.fontFamily = "NotoSans-Bold";
+  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
   title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   inspector.addControl(title);
@@ -70,7 +71,7 @@ const createScene = async () => {
   description.paddingLeft = "30px";
   description.paddingRight = "20px";
   description.paddingBottom = "5%";
-  description.fontFamily = "NotoSans-Medium";
+  description.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
   description.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   description.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   scroll.addControl(description);

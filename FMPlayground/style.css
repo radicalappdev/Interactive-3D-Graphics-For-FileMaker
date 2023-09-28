@@ -16,6 +16,7 @@
   width: 100%;
   height: calc(100vh - 2rem);
   padding: none;
+  outline: none;
 }
 
 .credit {
