@@ -1,7 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
-
 import * as GUI from "@babylonjs/gui/2D";
-// BABYLON.GUI = GUI; // assing GUI to BABYLON.GUI to match the usage in the playgrounds
+import { GridMaterial } from "@babylonjs/materials";
 
 console.log("main.js loaded");
 
@@ -90,21 +89,20 @@ const createScene = async () => {
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
   light.intensity = 1.2;
 
-  // TODO: Import materials and set up the grid
   // Create the grid material
-  // const gridMap = new BABYLON.GridMaterial("grid-mat", scene);
-  // gridMap.majorUnitFrequency = 0.1;
-  // gridMap.gridRatio = 1;
-  // gridMap.backFaceCulling = false;
-  // gridMap.opacity = 0.5;
-  // gridMap.lineColor = Color3.FromHexString(labColors.slate8);
-  // gridMap.mainColor = Color3.FromHexString(labColors.slate7);
+  const gridMap = new GridMaterial("grid-mat", scene);
+  gridMap.majorUnitFrequency = 0.1;
+  gridMap.gridRatio = 1;
+  gridMap.backFaceCulling = true;
+  gridMap.opacity = 0.5;
+  gridMap.lineColor = BABYLON.Color3.FromHexString("#e2e8f0");
+  gridMap.mainColor = BABYLON.Color3.FromHexString("#f1f5f9");
 
   let background;
-  const grid = BABYLON.MeshBuilder.CreateGround("grid", { width: 10, height: 6 }, scene);
+  const grid = BABYLON.MeshBuilder.CreateGround("grid", { width: 100, height: 60 }, scene);
   grid.rotation.x = Math.PI / 2;
   grid.position = new BABYLON.Vector3(-5, -3, -2);
-  // grid.material = gridMap;
+  grid.material = gridMap;
   cam.setTarget(grid);
 
   const layoutMat = new BABYLON.StandardMaterial("timeline-material", scene);
