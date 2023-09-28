@@ -36,7 +36,7 @@ const createScene = async () => {
   light.intensity = 1.2;
 
   // Create a material and a cube
-  const material = new StandardMaterial(scene);
+  const material = new StandardMaterial("box-mat", scene);
   material.alpha = 1;
   material.diffuseColor = Color3.FromHexString("#f1f5f9");
 
@@ -76,18 +76,24 @@ const resizeHelpers = (engine) => {
 
 // When the DOM is ready, run the createScene function
 window.addEventListener("DOMContentLoaded", async function () {
-  // Start the render loop
   const { scene, engine } = await createScene();
-
+  // Start the render loop
   engine.runRenderLoop(function () {
     scene.render();
   });
 
   // Resize the engine on window resize
-  window.addEventListener("resize", resizeHelpers(engine));
-
-  // Remove the event listener when the DOM is unloaded
-  window.addEventListener("unload", function () {
-    window.removeEventListener("resize", resizeHelpers(engine));
+  window.addEventListener("resize", function () {
+    engine.resize();
   });
+
+  // A simple function that can be called from FileMaker to make a change in the scene
+  this.window.changeBoxColor = (data) => {
+    const parsed = JSON.parse(data);
+    console.log("changeBoxColor", parsed);
+    //  get the box material by name
+    const mat = scene.getMaterialByName("box-mat");
+    // set the color
+    mat.diffuseColor = Color3.FromHexString(parsed.color);
+  };
 });

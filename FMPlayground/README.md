@@ -11,6 +11,7 @@ This simple project will get you started with Babylon JS in FileMaker.
 - run `npm install`
 - run `npm run dev` to start the dev server
 - run `npm run build` to build the project
+  - copy the content of the index.html file into the bundle field in the FileMaker file
 
 ## Files
 

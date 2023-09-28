@@ -26,7 +26,7 @@ const createScene = async () => {
   light.intensity = 1.2;
 
   // Create a material and a cube
-  const material = new BABYLON.StandardMaterial(scene);
+  const material = new BABYLON.StandardMaterial("box-mat", scene);
   material.alpha = 1;
   material.diffuseColor = BABYLON.Color3.FromHexString("#f1f5f9");
 
@@ -72,4 +72,14 @@ window.addEventListener("DOMContentLoaded", async function () {
   window.addEventListener("resize", function () {
     engine.resize();
   });
+
+  // A simple function that can be called from FileMaker to make a change in the scene
+  this.window.changeBoxColor = (data) => {
+    const parsed = JSON.parse(data);
+    console.log("changeBoxColor", parsed);
+    //  get the box material by name
+    const mat = scene.getMaterialByName("box-mat");
+    // set the color
+    mat.diffuseColor = BABYLON.Color3.FromHexString(parsed.color);
+  };
 });
