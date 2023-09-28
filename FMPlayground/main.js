@@ -42,7 +42,7 @@ const createScene = async () => {
 
   // Then add a textblock to the overlay.
   const title = new GUI.TextBlock("gui-title");
-  title.text = "FMPlayground TEST";
+  title.text = "FMPlayground";
   title.color = "white";
   title.fontSize = "32px";
   title.fontWeight = "bold";
