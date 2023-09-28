@@ -1,6 +1,7 @@
 import * as BABYLON from "@babylonjs/core";
 
 import * as GUI from "@babylonjs/gui/2D";
+// BABYLON.GUI = GUI; // assing GUI to BABYLON.GUI to match the usage in the playgrounds
 
 console.log("main.js loaded");
 
