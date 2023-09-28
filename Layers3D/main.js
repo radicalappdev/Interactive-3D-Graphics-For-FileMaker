@@ -124,6 +124,172 @@ const createScene = async () => {
   const parser = new DOMParser();
   const layersDoc = parser.parseFromString(layersData, "text/xml");
 
+  const createLayerBox = (deep, bounds, node, scene, material) => {
+    const offset = 100;
+    const width = (bounds.right - bounds.left) / offset;
+    const height = (bounds.bottom - bounds.top) / offset;
+    const posX = bounds.posX / offset + width / 2;
+    const posY = bounds.posY / offset + height / 2;
+
+    const layerBox = BABYLON.MeshBuilder.CreateBox("layer-box", { width: width, height: height, depth: 0.05 }, scene);
+    layerBox.position.x = -posX;
+    layerBox.position.y = -posY;
+    layerBox.position.z = deep;
+    layerBox.material = material;
+
+    const am = new BABYLON.ActionManager(scene);
+    layerBox.actionManager = am;
+    layerBox.actionManager.registerAction(
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (evt) => {
+        console.log("Clicked on", node.getAttribute("type"), deep, bounds);
+        cam.setTarget(layerBox);
+        if (node.getAttribute("type")) {
+          if (title) {
+            title.text = node.getAttribute("type");
+            description.text = new XMLSerializer().serializeToString(node);
+          }
+        } else {
+          title.text = "Root Object";
+          description.text = "";
+        }
+      })
+    );
+  };
+
+  // TODO: Rename this
+  // Function to log object type and count of ancestor Object nodes
+  function logObjectTypeAndAncestors(node) {
+    if (node.nodeName === "Object") {
+      let bounds = {
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        posX: 0,
+        posY: 0
+      };
+
+      // get the first Bounds child node
+      const boundsNode = node.querySelector("Bounds");
+      if (boundsNode) {
+        bounds.posY = Number(boundsNode.getAttribute("top") ?? 0);
+        bounds.posX = Number(boundsNode.getAttribute("left") ?? 0);
+        bounds.top = Number(boundsNode.getAttribute("top") ?? 0);
+        bounds.left = Number(boundsNode.getAttribute("left") ?? 0);
+        bounds.right = Number(boundsNode.getAttribute("right") ?? 0);
+        bounds.bottom = Number(boundsNode.getAttribute("bottom") ?? 0);
+      }
+
+      let ancestorCount = 0;
+      let parentNode = node.parentNode;
+      while (parentNode) {
+        if (parentNode.nodeName === "Object") {
+          // Accumulate the count of ancestor Object nodes - used for the z order of layers, containment, etc.
+          ancestorCount++;
+          // Add the parent's bounds to the current bounds to get the position
+          const parentBoundsNode = parentNode.querySelector("Bounds");
+          if (parentBoundsNode) {
+            bounds.posX += Number(parentBoundsNode.getAttribute("left") ?? 0);
+            bounds.posY += Number(parentBoundsNode.getAttribute("top") ?? 0);
+          }
+        }
+        parentNode = parentNode.parentNode;
+      }
+
+      const previousSiblings = node.parentNode?.querySelectorAll("Object");
+
+      if (previousSiblings) {
+        let previousSiblingCount = 0;
+
+        for (let i = 0; i < previousSiblings.length; i++) {
+          const sibling = previousSiblings[i];
+
+          // Check if the sibling is before the current node
+          if (sibling === node) {
+            break; // Stop counting when we reach the current node
+          }
+
+          // Calculate the offset for each sibling by using half of the space between major layers
+          const offZ = 0.9 / previousSiblings.length;
+          // Increment the count for each valid sibling
+          previousSiblingCount += offZ;
+        }
+
+        ancestorCount += previousSiblingCount;
+      }
+
+      console.log("Object Type:", node.getAttribute("type"), "Deep:", ancestorCount, "Bounds:", bounds);
+      createLayerBox(ancestorCount, bounds, node, scene, baselayer);
+    }
+  }
+
+  // Find and process Object nodes
+  const objectNodes = layersDoc.querySelectorAll("Object");
+  objectNodes.forEach(logObjectTypeAndAncestors);
+
+  // Create the layout layer - FileMaker calculates the bounds of the layout objects, not the layout itself
+  const layoutNode = layersDoc.querySelector("Layout");
+  if (layoutNode) {
+    const layoutTop = Number(layoutNode.getAttribute("enclosingRectTop") ?? 0);
+    const layoutLeft = Number(layoutNode.getAttribute("enclosingRectLeft") ?? 0);
+    const layoutRight = Number(layoutNode.getAttribute("enclosingRectRight") ?? 0);
+    const layoutBottom = Number(layoutNode.getAttribute("enclosingRectBottom") ?? 0);
+
+    let layoutBounds = {
+      top: layoutTop,
+      left: layoutLeft,
+      right: layoutRight,
+      bottom: layoutBottom,
+      posX: 0,
+      posY: 0
+    };
+
+    createLayerBox(-1, layoutBounds, layoutNode, scene, layoutMat);
+  }
+
+  scene.onKeyboardObservable.add((kbInfo) => {
+    switch (kbInfo.type) {
+      case BABYLON.KeyboardEventTypes.KEYDOWN:
+        if (kbInfo.event.key === "m") {
+          if (cam.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+            cam.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
+          } else {
+            cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+          }
+        }
+        if (kbInfo.event.key === "g") {
+          if (grid.visibility == 1) {
+            grid.visibility = 0;
+          } else {
+            grid.visibility = 1;
+          }
+        }
+        if (kbInfo.event.key === "i") {
+          if (inspector.isVisible) {
+            inspector.isVisible = false;
+          } else {
+            inspector.isVisible = true;
+          }
+        }
+        if (kbInfo.event.key === "o") {
+          if (inspector.width == "25%") {
+            inspector.width = "50%";
+            advancedTexture.markAsDirty();
+          } else {
+            inspector.width = "25%";
+            advancedTexture.markAsDirty();
+          }
+        }
+        if (kbInfo.event.key === "Escape") {
+          cam.setTarget(grid);
+          title.text = "Select an object";
+          description.text = "";
+          advancedTexture.markAsDirty();
+        }
+        break;
+    }
+  });
+
   return { scene, engine };
 };
 
