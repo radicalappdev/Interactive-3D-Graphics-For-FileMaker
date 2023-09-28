@@ -75,6 +75,28 @@ const createScene = async () => {
   description.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   scroll.addControl(description);
 
+  // Add a button called mode to the top left corner of the advancedTexture
+  const mode = GUI.Button.CreateSimpleButton("gui-mode", "Perspective");
+  mode.textBlock.fontSize = "24px";
+  mode.width = "200px";
+  mode.height = "80px";
+  mode.color = "white";
+  mode.background = "#3e4a5d";
+  mode.cornerRadius = 0;
+  mode.thickness = 0;
+  mode.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  mode.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  mode.onPointerUpObservable.add(() => {
+    if (cam.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+      cam.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
+      mode.textBlock.text = "Perspective";
+    } else {
+      cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+      mode.textBlock.text = "Orthographic";
+    }
+  });
+  advancedTexture.addControl(mode);
+
   // Create a camera
   const cam = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, new BABYLON.Vector3(-5, -3, 0), scene);
   cam.attachControl(scene.getEngine().getRenderingCanvas(), true);
@@ -148,8 +170,8 @@ const createScene = async () => {
             description.text = new XMLSerializer().serializeToString(node);
           }
         } else {
-          title.text = "Root Object";
-          description.text = "";
+          title.text = "Layout";
+          description.text = layersData;
         }
       })
     );
@@ -157,7 +179,7 @@ const createScene = async () => {
 
   // TODO: Rename this
   // Function to log object type and count of ancestor Object nodes
-  function logObjectTypeAndAncestors(node) {
+  function processNodes(node) {
     if (node.nodeName === "Object") {
       let bounds = {
         top: 0,
@@ -224,7 +246,7 @@ const createScene = async () => {
 
   // Find and process Object nodes
   const objectNodes = layersDoc.querySelectorAll("Object");
-  objectNodes.forEach(logObjectTypeAndAncestors);
+  objectNodes.forEach(processNodes);
 
   // Create the layout layer - FileMaker calculates the bounds of the layout objects, not the layout itself
   const layoutNode = layersDoc.querySelector("Layout");
@@ -251,8 +273,10 @@ const createScene = async () => {
       case BABYLON.KeyboardEventTypes.KEYDOWN:
         if (kbInfo.event.key === "m") {
           if (cam.mode === BABYLON.Camera.ORTHOGRAPHIC_CAMERA) {
+            mode.textBlock.text = "Perspective";
             cam.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
           } else {
+            mode.textBlock.text = "Orthographic";
             cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
           }
         }
