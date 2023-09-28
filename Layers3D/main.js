@@ -130,12 +130,12 @@ const createScene = async () => {
   const cam = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, new BABYLON.Vector3(-5, -3, 0), scene);
   cam.attachControl(scene.getEngine().getRenderingCanvas(), true);
   if (cam) {
-    // cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-    // TODO: calculate the ortho size based on current engine size
-    cam.orthoTop = 6;
-    cam.orthoBottom = -6;
-    cam.orthoLeft = -12;
-    cam.orthoRight = 12;
+    // Calculate the ortho size based on current engine size
+    cam.orthoTop = engine.getRenderHeight() / 4 / 100;
+    cam.orthoBottom = -cam.orthoTop;
+    cam.orthoLeft = engine.getRenderWidth() / 4 / 100;
+    cam.orthoRight = -cam.orthoLeft;
+    console.info("ortho", cam.orthoTop, cam.orthoBottom, cam.orthoLeft, cam.orthoRight);
   }
 
   //Create a basic light
@@ -146,7 +146,7 @@ const createScene = async () => {
   const gridMap = new GridMaterial("grid-mat", scene);
   gridMap.majorUnitFrequency = 0.1;
   gridMap.gridRatio = 1;
-  gridMap.backFaceCulling = true;
+  gridMap.backFaceCulling = false;
   gridMap.opacity = 0.5;
   gridMap.lineColor = BABYLON.Color3.FromHexString("#e2e8f0");
   gridMap.mainColor = BABYLON.Color3.FromHexString("#f1f5f9");
@@ -289,7 +289,7 @@ const createScene = async () => {
         ancestorCount += previousSiblingCount;
       }
 
-      console.log("Object Type:", node.getAttribute("type"), "Deep:", ancestorCount, "Bounds:", bounds);
+      // console.log("Object Type:", node.getAttribute("type"), "Deep:", ancestorCount, "Bounds:", bounds);
       createLayerBox(ancestorCount, bounds, node, scene, baselayer);
     }
   }
@@ -370,6 +370,12 @@ window.addEventListener("DOMContentLoaded", async function () {
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
     engine.resize();
+    const scene = engine.scenes[0];
+    const cam = scene.cameras[0];
+    cam.orthoTop = engine.getRenderHeight() / 2 / 100;
+    cam.orthoBottom = -cam.orthoTop;
+    cam.orthoLeft = engine.getRenderWidth() / 2 / 100;
+    cam.orthoRight = -cam.orthoLeft;
   });
 
   // A simple function that can be called from FileMaker to make a change in the scene
