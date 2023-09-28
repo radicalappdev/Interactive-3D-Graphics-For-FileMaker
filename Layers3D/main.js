@@ -70,7 +70,7 @@ const createScene = async () => {
   description.color = "white";
   description.fontSize = "24px";
   description.fontWeight = "normal";
-  description.textWrapping = true;
+  description.textWrapping = false;
   description.width = 1;
   description.height = 5;
   description.paddingTop = "1%";
@@ -242,6 +242,12 @@ const createScene = async () => {
         posX: 0,
         posY: 0
       };
+
+      //remove the FullCSS node from the object. It may be a couple of levels down
+      const fullCSSNode = node.querySelector("FullCSS");
+      if (fullCSSNode) {
+        fullCSSNode.remove();
+      }
 
       // get the first Bounds child node
       const boundsNode = node.querySelector("Bounds");
