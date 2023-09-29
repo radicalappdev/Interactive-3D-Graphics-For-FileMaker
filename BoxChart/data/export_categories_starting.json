@@ -1,0 +1,154 @@
+{
+  "CategorySummary": {
+    "File Metadata": {
+      "DisplayName": "File Metadata",
+      "CreationCount": 0,
+      "DeletionCount": 0,
+      "ModificatonCount": 1
+    },
+    "Tables": {
+      "DisplayName": "Tables",
+      "CreationCount": 0,
+      "DeletionCount": 3,
+      "ModificatonCount": 27
+    },
+    "Fields": {
+      "DisplayName": "Fields",
+      "CreationCount": 93,
+      "DeletionCount": 25,
+      "ModificatonCount": 1559
+    },
+    "Table Occurrences": {
+      "DisplayName": "Table Occurrences",
+      "CreationCount": 16,
+      "DeletionCount": 20,
+      "ModificatonCount": 244
+    },
+    "Relationships": {
+      "DisplayName": "Relationships",
+      "CreationCount": 15,
+      "DeletionCount": 17,
+      "ModificatonCount": 216
+    },
+    "Notes": {
+      "DisplayName": "Notes",
+      "CreationCount": 0,
+      "DeletionCount": 1,
+      "ModificatonCount": 12
+    },
+    "Graph Organization": {
+      "DisplayName": "Graph Organization",
+      "CreationCount": 31,
+      "DeletionCount": 38,
+      "ModificatonCount": 148
+    },
+    "Scripts": {
+      "DisplayName": "Scripts",
+      "CreationCount": 50,
+      "DeletionCount": 171,
+      "ModificatonCount": 699
+    },
+    "Script Organization": {
+      "DisplayName": "Script Organization",
+      "CreationCount": 54,
+      "DeletionCount": 173,
+      "ModificatonCount": 26
+    },
+    "Layouts": {
+      "DisplayName": "Layouts",
+      "CreationCount": 12,
+      "DeletionCount": 18,
+      "ModificatonCount": 210
+    },
+    "Layout Organization": {
+      "DisplayName": "Layout Organization",
+      "CreationCount": 12,
+      "DeletionCount": 21,
+      "ModificatonCount": 0
+    },
+    "Themes": {
+      "DisplayName": "Themes",
+      "CreationCount": 0,
+      "DeletionCount": 0,
+      "ModificatonCount": 7
+    },
+    "Custom Functions": {
+      "DisplayName": "Custom Functions",
+      "CreationCount": 7,
+      "DeletionCount": 0,
+      "ModificatonCount": 27
+    },
+    "Value Lists": {
+      "DisplayName": "Value Lists",
+      "CreationCount": 1,
+      "DeletionCount": 1,
+      "ModificatonCount": 154
+    },
+    "Accounts": {
+      "DisplayName": "Accounts",
+      "CreationCount": 0,
+      "DeletionCount": 0,
+      "ModificatonCount": 2
+    },
+    "Privilege Sets": {
+      "DisplayName": "Privilege Sets",
+      "CreationCount": 0,
+      "DeletionCount": 0,
+      "ModificatonCount": 5
+    },
+    "Extended Privileges": {
+      "DisplayName": "Extended Privileges",
+      "CreationCount": 4,
+      "DeletionCount": 0,
+      "ModificatonCount": 7
+    },
+    "Custom Menu Sets": {
+      "DisplayName": "Custom Menu Sets",
+      "CreationCount": 2,
+      "DeletionCount": 0,
+      "ModificatonCount": 0
+    },
+    "Menu Set Organization": {
+      "DisplayName": "Menu Set Organization",
+      "CreationCount": 8,
+      "DeletionCount": 0,
+      "ModificatonCount": 0
+    },
+    "Custom Menus": {
+      "DisplayName": "Custom Menus",
+      "CreationCount": 14,
+      "DeletionCount": 0,
+      "ModificatonCount": 30
+    },
+    "Menu Organization": {
+      "DisplayName": "Menu Organization",
+      "CreationCount": 17,
+      "DeletionCount": 2,
+      "ModificatonCount": 5
+    },
+    "Custom Menu Items": {
+      "DisplayName": "Custom Menu Items",
+      "CreationCount": 3,
+      "DeletionCount": 1,
+      "ModificatonCount": 79
+    },
+    "External Data Sources": {
+      "DisplayName": "External Data Sources",
+      "CreationCount": 1,
+      "DeletionCount": 0,
+      "ModificatonCount": 4
+    },
+    "Base Directories": {
+      "DisplayName": "Base Directories",
+      "CreationCount": 0,
+      "DeletionCount": 0,
+      "ModificatonCount": 1
+    },
+    "File Access Authorizations": {
+      "DisplayName": "File Access Authorizations",
+      "CreationCount": 0,
+      "DeletionCount": 0,
+      "ModificatonCount": 0
+    }
+  }
+}
