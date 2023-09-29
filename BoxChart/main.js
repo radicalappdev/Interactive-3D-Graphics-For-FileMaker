@@ -93,6 +93,27 @@ const createScene = async () => {
   scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
+  // Create a GUI
+  // First, create a fullscreen UI using the AdvancedDynamicTexture
+  const overlayAdvancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
+
+  // Then add a textblock to the overlay.
+  const title = new GUI.TextBlock("gui-title");
+  title.text = "Box Chart";
+  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+  title.color = "black";
+  title.fontSize = "32px";
+  title.fontWeight = "bold";
+  title.height = "100%";
+  title.width = "100%";
+  title.paddingTop = "20px";
+  title.paddingBottom = "16px";
+  title.paddingLeft = "16px";
+  title.paddingRight = "16px";
+  title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  overlayAdvancedTexture.addControl(title);
+
   const target = createTarget(scene);
 
   // Create a camera
@@ -101,22 +122,23 @@ const createScene = async () => {
   camera.upperAlphaLimit = Math.PI / 4 + Math.PI / 2;
   // camera.lowerBetaLimit = -0.4;
   camera.upperBetaLimit = 2.6;
-  camera.lowerRadiusLimit = 1;
-  camera.upperRadiusLimit = 10;
+  camera.lowerRadiusLimit = 3;
+  camera.upperRadiusLimit = 9;
   camera.attachControl(canvas, true);
   camera.setTarget(target.position);
   camera.wheelPrecision = 50;
 
-  if (camera) {
-    // Calculate the ortho size based on current engine size
-    camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-    camera.orthoTop = engine.getRenderHeight() / 12 / 100;
-    camera.orthoBottom = -(engine.getRenderHeight() / 12 / 100);
-    camera.orthoLeft = -(engine.getRenderWidth() / 12 / 100);
-    camera.orthoRight = engine.getRenderWidth() / 12 / 100;
-  }
+  // if (camera) {
+  //   // Calculate the ortho size based on current engine size
+  //   camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+  //   camera.orthoTop = engine.getRenderHeight() / 12 / 100;
+  //   camera.orthoBottom = -(engine.getRenderHeight() / 12 / 100);
+  //   camera.orthoLeft = -(engine.getRenderWidth() / 12 / 100);
+  //   camera.orthoRight = engine.getRenderWidth() / 12 / 100;
+  // }
 
   // // Create a basic light
+  //  TODO: Add a directional light
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
   light.intensity = 1.2;
 
@@ -163,7 +185,7 @@ const createScene = async () => {
   for (let i = 0; i < categories.length; i++) {
     const scalerGreen = base + getValuePosition(categories[i].CreationCount, maxValue) * adjust;
     const created = boxGreen.clone("created" + i);
-    created.position = new BABYLON.Vector3(boxGreen.position.x, scalerGreen / 2, -1.5 * i);
+    created.position = new BABYLON.Vector3(boxGreen.position.x, scalerGreen / 2, -1.2 * i);
     created.scaling.y = scalerGreen;
     if (categories[i].CreationCount == 0) {
       created.material = matWhite;
@@ -171,7 +193,7 @@ const createScene = async () => {
 
     const scalerRed = base + getValuePosition(categories[i].DeletionCount, maxValue) * adjust;
     const deleted = boxRed.clone("deleted" + i);
-    deleted.position = new BABYLON.Vector3(boxRed.position.x, scalerRed / 2, -1.5 * i);
+    deleted.position = new BABYLON.Vector3(boxRed.position.x, scalerRed / 2, -1.2 * i);
     deleted.scaling.y = scalerRed;
     if (categories[i].DeletionCount == 0) {
       deleted.material = matWhite;
@@ -179,14 +201,14 @@ const createScene = async () => {
 
     const scalerBlue = base + getValuePosition(categories[i].ModificatonCount, maxValue) * adjust;
     const modified = boxBlue.clone("modified" + i);
-    modified.position = new BABYLON.Vector3(boxBlue.position.x, scalerBlue / 2, -1.5 * i);
+    modified.position = new BABYLON.Vector3(boxBlue.position.x, scalerBlue / 2, -1.2 * i);
     modified.scaling.y = scalerBlue;
     if (categories[i].ModificatonCount == 0) {
       modified.material = matWhite;
     }
 
     const plane = BABYLON.MeshBuilder.CreatePlane("plane" + i, { width: 3, height: 1 }, scene);
-    plane.position = new BABYLON.Vector3(-4, 0, -1.5 * i);
+    plane.position = new BABYLON.Vector3(-4, 0, -1.2 * i);
     plane.rotation = new BABYLON.Vector3(Math.PI / 2, 0, 0);
 
     // GUI
@@ -196,10 +218,14 @@ const createScene = async () => {
     const category = Object.keys(data.CategorySummary)[i];
     text1.text = category;
     text1.color = "black";
-    text1.fontSize = 200;
+    text1.fontSize = 196;
+    text1.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
     text1.fontWeight = "bold";
     text1.textHorizontalAlignment = 1;
     advancedTexture.addControl(text1);
+    // overlayAdvancedTexture.addControl(text1);
+    // text1.linkWithMesh(plane);
+    // text1.linkOffsetX = -1200;
 
     boxes.addChild(created);
     boxes.addChild(deleted);
@@ -209,32 +235,11 @@ const createScene = async () => {
 
   boxes.position = new BABYLON.Vector3(0, 12, 0);
   boxes.rotation = new BABYLON.Vector3(Math.PI / -2, Math.PI / 2, Math.PI / 2);
-  boxes.scaling = new BABYLON.Vector3(0.3, 0.3, 0.3);
+  boxes.scaling = new BABYLON.Vector3(0.25, 0.25, 0.25);
   // hide the default boxes
   boxGreen.isVisible = false;
   boxRed.isVisible = false;
   boxBlue.isVisible = false;
-
-  // Create a GUI
-  // First, create a fullscreen UI using the AdvancedDynamicTexture
-  const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
-
-  // Then add a textblock to the overlay.
-  const title = new GUI.TextBlock("gui-title");
-  title.text = "Box Chart";
-  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
-  title.color = "black";
-  title.fontSize = "32px";
-  title.fontWeight = "bold";
-  title.height = "100%";
-  title.width = "100%";
-  title.paddingTop = "20px";
-  title.paddingBottom = "16px";
-  title.paddingLeft = "16px";
-  title.paddingRight = "16px";
-  title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-  title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-  advancedTexture.addControl(title);
 
   return { scene, engine };
 };
