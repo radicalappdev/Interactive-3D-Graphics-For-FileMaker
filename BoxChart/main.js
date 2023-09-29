@@ -38,6 +38,51 @@ export function getValuePosition(value, largestValue) {
   }
 }
 
+const createTarget = (scene) => {
+  const target = BABYLON.MeshBuilder.CreateBox("target", { size: 0.5 }, scene);
+  target.position.y = 12;
+  target.visibility = 0;
+
+  //press w and s to move the camera position up and down
+  // Define variables to control the movement
+  let isMovingUp = false;
+  let isMovingDown = false;
+  const moveSpeed = 1; // Adjust the speed as needed
+
+  scene.onKeyboardObservable.add((kbInfo) => {
+    switch (kbInfo.type) {
+      case BABYLON.KeyboardEventTypes.KEYDOWN:
+        if (kbInfo.event.key === "w") {
+          isMovingUp = true;
+        } else if (kbInfo.event.key === "s") {
+          isMovingDown = true;
+        }
+        break;
+      case BABYLON.KeyboardEventTypes.KEYUP:
+        if (kbInfo.event.key === "w") {
+          isMovingUp = false;
+        } else if (kbInfo.event.key === "s") {
+          isMovingDown = false;
+        }
+        break;
+    }
+  });
+
+  // Create an animation loop to move the mesh with delta time
+  scene.registerBeforeRender(() => {
+    const deltaTime = scene.getEngine().getDeltaTime() / 1000; // Convert to seconds
+    const speedFactor = moveSpeed * deltaTime;
+
+    if (isMovingUp) {
+      target.position.y += speedFactor;
+    } else if (isMovingDown) {
+      target.position.y -= speedFactor;
+    }
+  });
+
+  return target;
+};
+
 const createScene = async () => {
   // get the canvas from the DOM
   const canvas = document.getElementById("bjsCanvas");
@@ -48,13 +93,21 @@ const createScene = async () => {
   scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
+  const target = createTarget(scene);
+
   // Create a camera
-  const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
-  camera.position = new BABYLON.Vector3(0, 3, -5);
-  camera.attachControl(canvas, true); // Attach the camera controls to the canvas
-  camera.setTarget(BABYLON.Vector3.Zero()); // Target the camera to scene origin. You could also target a mesh, or something else
-  // camera.lowerRadiusLimit = 2;
-  // camera.upperRadiusLimit = 10;
+  const camera = new BABYLON.ArcRotateCamera("camera", 0, 0, 3, new BABYLON.Vector3(3, 9, 3), scene);
+  camera.lowerBetaLimit = -0.4;
+  camera.upperBetaLimit = 2.6;
+  camera.lowerRadiusLimit = 1;
+  camera.upperRadiusLimit = 10;
+  camera.attachControl(canvas, true);
+  camera.setTarget(target.position);
+  camera.wheelPrecision = 50;
+  camera.useAutoRotationBehavior = true;
+  if (camera.autoRotationBehavior) {
+    camera.autoRotationBehavior.idleRotationSpeed = -0.1;
+  }
 
   // // Create a basic light
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
