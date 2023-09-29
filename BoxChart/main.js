@@ -90,6 +90,71 @@ const createScene = async () => {
   boxBlue.position = new BABYLON.Vector3(1.5, 0.5, 0);
   boxBlue.material = matBlue;
 
+  const maxValue = findLargestValue(data);
+  // const position = getValuePosition(5, maxValue);
+  console.log("max value", maxValue);
+
+  const base = 0.1;
+  const adjust = 5;
+
+  let boxes = new BABYLON.Mesh("boxes", scene);
+
+  const categories = Object.values(data.CategorySummary);
+  for (let i = 0; i < categories.length; i++) {
+    const scalerGreen = base + getValuePosition(categories[i].CreationCount, maxValue) * adjust;
+    const created = boxGreen.clone("created" + i);
+    created.position = new BABYLON.Vector3(boxGreen.position.x, scalerGreen / 2, -1.5 * i);
+    created.scaling.y = scalerGreen;
+    if (categories[i].CreationCount == 0) {
+      created.material = matWhite;
+    }
+
+    const scalerRed = base + getValuePosition(categories[i].DeletionCount, maxValue) * adjust;
+    const deleted = boxRed.clone("deleted" + i);
+    deleted.position = new BABYLON.Vector3(boxRed.position.x, scalerRed / 2, -1.5 * i);
+    deleted.scaling.y = scalerRed;
+    if (categories[i].DeletionCount == 0) {
+      deleted.material = matWhite;
+    }
+
+    const scalerBlue = base + getValuePosition(categories[i].ModificatonCount, maxValue) * adjust;
+    const modified = boxBlue.clone("modified" + i);
+    modified.position = new BABYLON.Vector3(boxBlue.position.x, scalerBlue / 2, -1.5 * i);
+    modified.scaling.y = scalerBlue;
+    if (categories[i].ModificatonCount == 0) {
+      modified.material = matWhite;
+    }
+
+    const plane = BABYLON.MeshBuilder.CreatePlane("plane" + i, { width: 3, height: 1 }, scene);
+    plane.position = new BABYLON.Vector3(-4, 0, -1.5 * i);
+    plane.rotation = new BABYLON.Vector3(Math.PI / 2, 0, 0);
+
+    // GUI
+    const advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane, 1024 * 3, 1024 / 2, false);
+    const text1 = new GUI.TextBlock();
+    // get the json key for the category
+    const category = Object.keys(data.CategorySummary)[i];
+    text1.text = category;
+    text1.color = "black";
+    text1.fontSize = 200;
+    text1.fontWeight = "bold";
+    text1.textHorizontalAlignment = 1;
+    advancedTexture.addControl(text1);
+
+    boxes.addChild(created);
+    boxes.addChild(deleted);
+    boxes.addChild(modified);
+    boxes.addChild(plane);
+  }
+
+  boxes.position = new BABYLON.Vector3(0, 12, 0);
+  boxes.rotation = new BABYLON.Vector3(Math.PI / -2, Math.PI / 2, Math.PI / 2);
+  boxes.scaling = new BABYLON.Vector3(0.3, 0.3, 0.3);
+  // hide the default boxes
+  boxGreen.isVisible = false;
+  boxRed.isVisible = false;
+  boxBlue.isVisible = false;
+
   // Create a GUI
   // First, create a fullscreen UI using the AdvancedDynamicTexture
   const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
