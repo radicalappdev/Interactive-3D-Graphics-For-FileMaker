@@ -1,5 +1,4 @@
 import * as BABYLON from "@babylonjs/core";
-
 import * as GUI from "@babylonjs/gui/2D";
 
 console.log("main.js loaded");
@@ -11,6 +10,7 @@ const createScene = async () => {
   // Create the enging and scene
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
+  scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
   // Create a camera
@@ -19,6 +19,8 @@ const createScene = async () => {
   camera.attachControl(canvas, true); // Attach the camera controls to the canvas
   camera.setTarget(BABYLON.Vector3.Zero()); // Target the camera to scene origin. You could also target a mesh, or something else
   camera.useAutoRotationBehavior = true; // Remove this to stop the auto rotation
+  camera.lowerRadiusLimit = 2;
+  camera.upperRadiusLimit = 10;
 
   // // Create a basic light
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
@@ -27,7 +29,7 @@ const createScene = async () => {
   // Create a material and a cube
   const material = new BABYLON.StandardMaterial("box-mat", scene);
   material.alpha = 1;
-  material.diffuseColor = BABYLON.Color3.FromHexString("#f1f5f9");
+  material.diffuseColor = BABYLON.Color3.FromHexString("#94a3b8");
 
   const cube = BABYLON.MeshBuilder.CreateBox("box", {
     height: 1,
@@ -43,7 +45,8 @@ const createScene = async () => {
   // Then add a textblock to the overlay.
   const title = new GUI.TextBlock("gui-title");
   title.text = "FMPlayground";
-  title.color = "white";
+  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+  title.color = "black";
   title.fontSize = "32px";
   title.fontWeight = "bold";
   title.height = "100%";

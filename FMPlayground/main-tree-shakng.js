@@ -22,6 +22,7 @@ const createScene = async () => {
   // Create the enging and scene
   const engine = new Engine(canvas, true);
   const scene = new Scene(engine);
+  scene.clearColor = Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
   // Create a camera
@@ -30,6 +31,8 @@ const createScene = async () => {
   camera.attachControl(canvas, true); // Attach the camera controls to the canvas
   camera.setTarget(Vector3.Zero()); // Target the camera to scene origin. You could also target a mesh, or something else
   camera.useAutoRotationBehavior = true; // Remove this to stop the auto rotation
+  camera.lowerRadiusLimit = 2;
+  camera.upperRadiusLimit = 10;
 
   // // Create a basic light
   const light = new HemisphericLight("light1", new Vector3(0, 1, 0), scene);
@@ -38,7 +41,7 @@ const createScene = async () => {
   // Create a material and a cube
   const material = new StandardMaterial("box-mat", scene);
   material.alpha = 1;
-  material.diffuseColor = Color3.FromHexString("#f1f5f9");
+  material.diffuseColor = Color3.FromHexString("#94a3b8");
 
   const cube = CreateBox("box", {
     height: 1,
@@ -54,7 +57,8 @@ const createScene = async () => {
   // Then add a textblock to the overlay.
   const title = new TextBlock("gui-title");
   title.text = "FMPlayground";
-  title.color = "white";
+  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+  title.color = "black";
   title.fontSize = "32px";
   title.fontWeight = "bold";
   title.height = "100%";
