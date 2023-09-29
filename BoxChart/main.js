@@ -233,6 +233,7 @@ window.addEventListener("DOMContentLoaded", async function () {
     engine.resize();
   });
 
+  // Call this from FileMaker to populate the boxes with data OR call it if we are not in FileMaker to use the sample data
   this.window.populateBoxes = async (data) => {
     if (typeof data === "string") {
       data = JSON.parse(data);
