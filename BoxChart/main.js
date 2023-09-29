@@ -52,16 +52,16 @@ const createTarget = (scene) => {
   scene.onKeyboardObservable.add((kbInfo) => {
     switch (kbInfo.type) {
       case BABYLON.KeyboardEventTypes.KEYDOWN:
-        if (kbInfo.event.key === "w") {
+        if (kbInfo.event.key === "w" || kbInfo.event.key === "ArrowUp") {
           isMovingUp = true;
-        } else if (kbInfo.event.key === "s") {
+        } else if (kbInfo.event.key === "s" || kbInfo.event.key === "ArrowDown") {
           isMovingDown = true;
         }
         break;
       case BABYLON.KeyboardEventTypes.KEYUP:
-        if (kbInfo.event.key === "w") {
+        if (kbInfo.event.key === "w" || kbInfo.event.key === "ArrowUp") {
           isMovingUp = false;
-        } else if (kbInfo.event.key === "s") {
+        } else if (kbInfo.event.key === "s" || kbInfo.event.key === "ArrowDown") {
           isMovingDown = false;
         }
         break;
@@ -132,6 +132,7 @@ const createScene = async () => {
   camera.attachControl(canvas, true);
   camera.setTarget(target.position);
   camera.wheelPrecision = 50;
+  camera.inputs.remove(camera.inputs.attached.keyboard);
 
   // // Create a basic light
   //  TODO: Add a directional light
@@ -203,12 +204,12 @@ const createScene = async () => {
       modified.material = matWhite;
     }
 
-    const plane = BABYLON.MeshBuilder.CreatePlane("plane" + i, { width: 6.1, height: 1.1 }, scene);
-    plane.position = new BABYLON.Vector3(-1.1, 0, -1.2 * i);
+    const plane = BABYLON.MeshBuilder.CreatePlane("plane" + i, { width: 7.1, height: 1.1 }, scene);
+    plane.position = new BABYLON.Vector3(-1.2, 0, -1.2 * i);
     plane.rotation = new BABYLON.Vector3(Math.PI / 2, 0, 0);
 
     // GUI
-    const advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane, 1024 * 6.1, 1024 / 1.1, false);
+    const advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane, 1024 * 7.1, 1024 / 1.1, false);
     const text1 = new GUI.TextBlock();
     // get the json key for the category
     const category = Object.keys(data.CategorySummary)[i];
