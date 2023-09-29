@@ -92,6 +92,12 @@ const createScene = async () => {
   const scene = new BABYLON.Scene(engine);
   scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
+  const boundingBoxRenderer = scene.getBoundingBoxRenderer();
+  if (boundingBoxRenderer) {
+    boundingBoxRenderer.frontColor.set(0, 0, 0);
+    boundingBoxRenderer.showBackLines = false;
+    // boundingBoxRenderer.backColor.set(0.1, 1, 0.1);
+  }
 
   // Create a GUI
   // First, create a fullscreen UI using the AdvancedDynamicTexture
@@ -117,25 +123,15 @@ const createScene = async () => {
   const target = createTarget(scene);
 
   // Create a camera
-  const camera = new BABYLON.ArcRotateCamera("camera", 0, 0, 3, new BABYLON.Vector3(3, 10, 3), scene);
+  const camera = new BABYLON.ArcRotateCamera("camera", 0, 0, 3, new BABYLON.Vector3(3, 10, 1), scene);
   camera.lowerAlphaLimit = -Math.PI / 4 + Math.PI / 2;
   camera.upperAlphaLimit = Math.PI / 4 + Math.PI / 2;
-  // camera.lowerBetaLimit = -0.4;
   camera.upperBetaLimit = 2.6;
   camera.lowerRadiusLimit = 3;
   camera.upperRadiusLimit = 9;
   camera.attachControl(canvas, true);
   camera.setTarget(target.position);
   camera.wheelPrecision = 50;
-
-  // if (camera) {
-  //   // Calculate the ortho size based on current engine size
-  //   camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-  //   camera.orthoTop = engine.getRenderHeight() / 12 / 100;
-  //   camera.orthoBottom = -(engine.getRenderHeight() / 12 / 100);
-  //   camera.orthoLeft = -(engine.getRenderWidth() / 12 / 100);
-  //   camera.orthoRight = engine.getRenderWidth() / 12 / 100;
-  // }
 
   // // Create a basic light
   //  TODO: Add a directional light
@@ -207,12 +203,12 @@ const createScene = async () => {
       modified.material = matWhite;
     }
 
-    const plane = BABYLON.MeshBuilder.CreatePlane("plane" + i, { width: 3, height: 1 }, scene);
-    plane.position = new BABYLON.Vector3(-4, 0, -1.2 * i);
+    const plane = BABYLON.MeshBuilder.CreatePlane("plane" + i, { width: 6.1, height: 1.1 }, scene);
+    plane.position = new BABYLON.Vector3(-1.1, 0, -1.2 * i);
     plane.rotation = new BABYLON.Vector3(Math.PI / 2, 0, 0);
 
     // GUI
-    const advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane, 1024 * 3, 1024 / 2, false);
+    const advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane, 1024 * 6.1, 1024 / 1.1, false);
     const text1 = new GUI.TextBlock();
     // get the json key for the category
     const category = Object.keys(data.CategorySummary)[i];
@@ -221,11 +217,14 @@ const createScene = async () => {
     text1.fontSize = 196;
     text1.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
     text1.fontWeight = "bold";
-    text1.textHorizontalAlignment = 1;
+    text1.paddingLeftInPixels = 100;
+    text1.textHorizontalAlignment = 0;
     advancedTexture.addControl(text1);
     // overlayAdvancedTexture.addControl(text1);
     // text1.linkWithMesh(plane);
     // text1.linkOffsetX = -1200;
+
+    plane.showBoundingBox = true;
 
     boxes.addChild(created);
     boxes.addChild(deleted);
