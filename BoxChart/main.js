@@ -40,7 +40,7 @@ export function getValuePosition(value, largestValue) {
 
 const createTarget = (scene) => {
   const target = BABYLON.MeshBuilder.CreateBox("target", { size: 0.5 }, scene);
-  target.position.y = 12;
+  target.position.y = 11.5;
   target.visibility = 0;
 
   //press w and s to move the camera position up and down
@@ -96,17 +96,24 @@ const createScene = async () => {
   const target = createTarget(scene);
 
   // Create a camera
-  const camera = new BABYLON.ArcRotateCamera("camera", 0, 0, 3, new BABYLON.Vector3(3, 9, 3), scene);
-  camera.lowerBetaLimit = -0.4;
+  const camera = new BABYLON.ArcRotateCamera("camera", 0, 0, 3, new BABYLON.Vector3(3, 10, 3), scene);
+  camera.lowerAlphaLimit = -Math.PI / 4 + Math.PI / 2;
+  camera.upperAlphaLimit = Math.PI / 4 + Math.PI / 2;
+  // camera.lowerBetaLimit = -0.4;
   camera.upperBetaLimit = 2.6;
   camera.lowerRadiusLimit = 1;
   camera.upperRadiusLimit = 10;
   camera.attachControl(canvas, true);
   camera.setTarget(target.position);
   camera.wheelPrecision = 50;
-  camera.useAutoRotationBehavior = true;
-  if (camera.autoRotationBehavior) {
-    camera.autoRotationBehavior.idleRotationSpeed = -0.1;
+
+  if (camera) {
+    // Calculate the ortho size based on current engine size
+    camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+    camera.orthoTop = engine.getRenderHeight() / 12 / 100;
+    camera.orthoBottom = -(engine.getRenderHeight() / 12 / 100);
+    camera.orthoLeft = -(engine.getRenderWidth() / 12 / 100);
+    camera.orthoRight = engine.getRenderWidth() / 12 / 100;
   }
 
   // // Create a basic light
