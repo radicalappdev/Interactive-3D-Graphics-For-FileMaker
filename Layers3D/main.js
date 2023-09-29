@@ -4,7 +4,7 @@ import { GridMaterial } from "@babylonjs/materials";
 
 console.log("main.js loaded");
 
-const createScene = async () => {
+const createScene = async (layersData) => {
   // get the canvas from the DOM
   const canvas = document.getElementById("bjsCanvas");
 
@@ -204,6 +204,9 @@ const createScene = async () => {
   focus.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
   toolbar.addControl(focus);
 
+  inspector.isVisible = false;
+  toggleSize.isVisible = false;
+
   // Create a camera
   const cam = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, new BABYLON.Vector3(-5, -3, 0), scene);
   cam.attachControl(scene.getEngine().getRenderingCanvas(), true);
@@ -212,6 +215,7 @@ const createScene = async () => {
   cam.upperRadiusLimit = 100;
   if (cam) {
     // Calculate the ortho size based on current engine size
+    cam.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     cam.orthoTop = engine.getRenderHeight() / 4 / 100;
     cam.orthoBottom = -(engine.getRenderHeight() / 4 / 100);
     cam.orthoLeft = -(engine.getRenderWidth() / 4 / 100);
@@ -250,7 +254,7 @@ const createScene = async () => {
 
   // TODO: Replace this with incoming data from FileMaker
   // fetch the XML data from the sample-data folder
-  const layersData = await fetch("../sample-data/project-layers.xml").then((res) => res.text());
+  // const layersData = await fetch("../sample-data/project-layers.xml").then((res) => res.text());
 
   // parse the XML data into an XMLDocument
   const parser = new DOMParser();
@@ -266,7 +270,7 @@ const createScene = async () => {
     const layerBox = BABYLON.MeshBuilder.CreateBox("layer-box", { width: width, height: height, depth: 0.05 }, scene);
     layerBox.position.x = -posX;
     layerBox.position.y = -posY;
-    layerBox.position.z = deep;
+    layerBox.position.z = deep * 2;
     layerBox.material = material;
 
     const am = new BABYLON.ActionManager(scene);
@@ -371,7 +375,7 @@ const createScene = async () => {
           }
 
           // Calculate the offset for each sibling by using half of the space between major layers
-          const offZ = 0.9 / previousSiblings.length;
+          const offZ = 1.5 / previousSiblings.length;
           // Increment the count for each valid sibling
           previousSiblingCount += offZ;
         }
@@ -473,11 +477,8 @@ const createScene = async () => {
 
 // When the DOM is ready, run the createScene function
 window.addEventListener("DOMContentLoaded", async function () {
-  const { scene, engine } = await createScene();
-  // Start the render loop
-  engine.runRenderLoop(function () {
-    scene.render();
-  });
+  let engine;
+  let scene;
 
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
@@ -498,5 +499,17 @@ window.addEventListener("DOMContentLoaded", async function () {
     const mat = scene.getMaterialByName("box-mat");
     // set the color
     mat.diffuseColor = BABYLON.Color3.FromHexString(parsed.color);
+  };
+
+  this.window.populateLayers = async (data) => {
+    // data is xml, pass it to the createScene function
+    const { scene: newScene, engine: newEnging } = await createScene(data);
+    engine = newEnging;
+    scene = newScene;
+
+    // Start the render loop
+    engine.runRenderLoop(function () {
+      scene.render();
+    });
   };
 });
