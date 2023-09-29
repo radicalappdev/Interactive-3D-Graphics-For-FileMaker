@@ -1,11 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui/2D";
-// TODO Import this from FileMaker
-import data from "/data/export_categories_starting.json";
+import sampleData from "/data/export_categories_starting.json";
 
 console.log("main.js loaded");
-
-console.log("data", data);
 
 export function findLargestValue(data) {
   let largestValue = 0;
@@ -83,7 +80,7 @@ const createTarget = (scene) => {
   return target;
 };
 
-const createScene = async () => {
+const createScene = async (data) => {
   // get the canvas from the DOM
   const canvas = document.getElementById("bjsCanvas");
 
@@ -96,29 +93,7 @@ const createScene = async () => {
   if (boundingBoxRenderer) {
     boundingBoxRenderer.frontColor.set(0, 0, 0);
     boundingBoxRenderer.showBackLines = false;
-    // boundingBoxRenderer.backColor.set(0.1, 1, 0.1);
   }
-
-  // Create a GUI
-  // First, create a fullscreen UI using the AdvancedDynamicTexture
-  const overlayAdvancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
-
-  // Then add a textblock to the overlay.
-  const title = new GUI.TextBlock("gui-title");
-  title.text = "Box Chart";
-  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
-  title.color = "black";
-  title.fontSize = "32px";
-  title.fontWeight = "bold";
-  title.height = "100%";
-  title.width = "100%";
-  title.paddingTop = "20px";
-  title.paddingBottom = "16px";
-  title.paddingLeft = "16px";
-  title.paddingRight = "16px";
-  title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-  title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-  overlayAdvancedTexture.addControl(title);
 
   const target = createTarget(scene);
 
@@ -134,10 +109,11 @@ const createScene = async () => {
   camera.wheelPrecision = 50;
   camera.inputs.remove(camera.inputs.attached.keyboard);
 
-  // // Create a basic light
-  //  TODO: Add a directional light
+  // Lights
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-  light.intensity = 1.2;
+  light.intensity = 0.5;
+  const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -1, -1), scene);
+  dirLight.intensity = 0.9;
 
   // Materials
   const matRed = new BABYLON.StandardMaterial("matRed", scene);
@@ -186,6 +162,7 @@ const createScene = async () => {
     created.scaling.y = scalerGreen;
     if (categories[i].CreationCount == 0) {
       created.material = matWhite;
+      created.scaling.y = 0.01;
     }
 
     const scalerRed = base + getValuePosition(categories[i].DeletionCount, maxValue) * adjust;
@@ -194,6 +171,7 @@ const createScene = async () => {
     deleted.scaling.y = scalerRed;
     if (categories[i].DeletionCount == 0) {
       deleted.material = matWhite;
+      deleted.scaling.y = 0.01;
     }
 
     const scalerBlue = base + getValuePosition(categories[i].ModificatonCount, maxValue) * adjust;
@@ -202,6 +180,7 @@ const createScene = async () => {
     modified.scaling.y = scalerBlue;
     if (categories[i].ModificatonCount == 0) {
       modified.material = matWhite;
+      modified.scaling.y = 0.01;
     }
 
     const plane = BABYLON.MeshBuilder.CreatePlane("plane" + i, { width: 7.1, height: 1.1 }, scene);
@@ -221,10 +200,10 @@ const createScene = async () => {
     text1.paddingLeftInPixels = 100;
     text1.textHorizontalAlignment = 0;
     advancedTexture.addControl(text1);
-    // overlayAdvancedTexture.addControl(text1);
-    // text1.linkWithMesh(plane);
-    // text1.linkOffsetX = -1200;
 
+    created.showBoundingBox = true;
+    deleted.showBoundingBox = true;
+    modified.showBoundingBox = true;
     plane.showBoundingBox = true;
 
     boxes.addChild(created);
@@ -246,24 +225,30 @@ const createScene = async () => {
 
 // When the DOM is ready, run the createScene function
 window.addEventListener("DOMContentLoaded", async function () {
-  const { scene, engine } = await createScene();
-  // Start the render loop
-  engine.runRenderLoop(function () {
-    scene.render();
-  });
+  let engine;
+  let scene;
 
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
     engine.resize();
   });
 
-  // A simple function that can be called from FileMaker to make a change in the scene
-  this.window.changeBoxColor = (data) => {
-    const parsed = JSON.parse(data);
-    console.log("changeBoxColor", parsed);
-    //  get the box material by name
-    const mat = scene.getMaterialByName("box-mat");
-    // set the color
-    mat.diffuseColor = BABYLON.Color3.FromHexString(parsed.color);
+  this.window.populateBoxes = async (data) => {
+    if (typeof data === "string") {
+      data = JSON.parse(data);
+    }
+
+    const { scene: newScene, engine: newEnging } = await createScene(data);
+    engine = newEnging;
+    scene = newScene;
+    // Start the render loop
+    engine.runRenderLoop(function () {
+      scene.render();
+    });
   };
+
+  if (!this.window.FileMaker) {
+    // If we are not in FileMaker, populate the boxes with sample data
+    this.window.populateBoxes(sampleData);
+  }
 });
