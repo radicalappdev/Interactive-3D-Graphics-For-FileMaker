@@ -38,7 +38,7 @@ const createScene = async () => {
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
   camera.position = new BABYLON.Vector3(0, 0, -22);
-  camera.attachControl(canvas, true); // Attach the camera controls to the canvas
+  // camera.attachControl(canvas, true); // Attach the camera controls to the canvas
   camera.lowerRadiusLimit = 2;
   camera.upperRadiusLimit = 30;
 
@@ -50,23 +50,21 @@ const createScene = async () => {
 
   const dateStart = new Date(projectData[0].date);
   const dateEnd = new Date(projectData[projectData.length - 1].date);
-  console.log(dateStart, dateEnd);
 
   // for each day, clone the tube mesh and move it along the x-axis
   const day = 24 * 60 * 60 * 1000;
   const dayCount = Math.round((dateEnd.getTime() - dateStart.getTime()) / day);
-  console.log(dayCount);
 
   const timelineMat = new BABYLON.StandardMaterial("timeline-material", scene);
   timelineMat.diffuseColor = BABYLON.Color3.FromHexString("#e2e8f0");
   timelineMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
   const milestoneMat = new BABYLON.StandardMaterial("milestone-material", scene);
-  milestoneMat.diffuseColor = BABYLON.Color3.FromHexString("#2d98da");
+  milestoneMat.diffuseColor = BABYLON.Color3.FromHexString("#4374d1");
   milestoneMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
   const versionMat = new BABYLON.StandardMaterial("version-material", scene);
-  versionMat.diffuseColor = BABYLON.Color3.FromHexString("#8854d0");
+  versionMat.diffuseColor = BABYLON.Color3.FromHexString("#C7303E");
   versionMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
   const timelineScaler = 0.025;
@@ -151,8 +149,7 @@ const createScene = async () => {
     card.addControl(cardType);
 
     card.isVisible = false;
-    // if (item.date != "2020-08-01") {
-    // }
+
     // When we click the event mesh, show the card
     eventMesh.actionManager = new BABYLON.ActionManager(scene);
     eventMesh.actionManager.registerAction(
@@ -204,14 +201,4 @@ window.addEventListener("DOMContentLoaded", async function () {
     camera.orthoLeft = -(orthoScaler * (engine.getRenderWidth() / engine.getRenderHeight()));
     camera.orthoRight = orthoScaler * (engine.getRenderWidth() / engine.getRenderHeight());
   });
-
-  // A simple function that can be called from FileMaker to make a change in the scene
-  this.window.changeBoxColor = (data) => {
-    const parsed = JSON.parse(data);
-    console.log("changeBoxColor", parsed);
-    //  get the box material by name
-    const mat = scene.getMaterialByName("box-mat");
-    // set the color
-    mat.diffuseColor = BABYLON.Color3.FromHexString(parsed.color);
-  };
 });
