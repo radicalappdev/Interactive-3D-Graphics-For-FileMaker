@@ -4,7 +4,7 @@ import sampleData from "/data/ohio-demo-01.json";
 
 console.log("main.js loaded");
 
-class ChoroplethSegmenter {
+class ChoroplethSegmentor {
   constructor(data, segments) {
     this.data = data;
     this.segments = segments;
@@ -30,7 +30,9 @@ class ChoroplethSegmenter {
   }
 }
 
-export const extractSVG_babylon = (svg) => {
+const convertSVGPathsToBabylon = (svg) => {
+  // NOTE: This is a total mess and a hack and should not be used in production
+  // I made this simple parser to convert the SVG paths to an array of points, but it does not actually pay attention to the commands in the path data
   // Function to parse path data and convert it into an array of points
   function parsePathData(pathData) {
     // Regular expression pattern to find all commands and their coordinates
@@ -127,9 +129,15 @@ const createScene = async (data, svg) => {
   const heightFactor = 1;
 
   // Create an instance of the ChoroplethSegmenter class
-  const choroplethSegmenter = new ChoroplethSegmenter(sampleData, numberOfSegments);
+  const choroplethSegmentor = new ChoroplethSegmentor(sampleData, numberOfSegments);
 
-  function extrudePath(node) {
+  const pathsArray = convertSVGPathsToBabylon(svg);
+
+  // Create a group to hold all the extruded paths
+  const extrudedPathsGroup = new BABYLON.Mesh("extrudedPathsGroup", scene);
+
+  // loop through the paths array and extrude each path
+  pathsArray.forEach((node) => {
     const id = node.id;
 
     // get the object from the sample data where countyName matches the id
@@ -138,7 +146,7 @@ const createScene = async (data, svg) => {
     const value = entry.value;
 
     // get the value from the entry
-    const num = choroplethSegmenter.getSegment(value);
+    const num = choroplethSegmentor.getSegment(value);
     console.log(id, entry, num);
 
     // Use the number to pick a color from the array
@@ -245,17 +253,7 @@ const createScene = async (data, svg) => {
       })
     );
 
-    return extrudedMesh;
-  }
-
-  const pathsArray = extractSVG_babylon(svg);
-
-  // Create a group to hold all the extruded paths
-  const extrudedPathsGroup = new BABYLON.Mesh("extrudedPathsGroup", scene);
-
-  // loop through the paths array and extrude each path
-  pathsArray.forEach((path) => {
-    extrudedPathsGroup.addChild(extrudePath(path));
+    extrudedPathsGroup.addChild(extrudedMesh);
   });
 
   // Rotate the group so it's facing the camera - important! This must be done before applying the bounding offsets
