@@ -69,16 +69,17 @@ const createScene = async () => {
     eventMesh.material = item.type === "milestone" ? milestoneMat : versionMat;
   });
 
-  // calculate a orthoScaler that will make the timeline fit the screen in orthographic mode
+  // Calculate ortho bounds to fit the timeline
+  const desiredTimelineHeight = (dayCount + 100) * timelineScaler; // The height you want to show in orthographic mode
+  const orthoScaler = desiredTimelineHeight / 2; // You can adjust this factor based on your preference
 
-  const orthoScaler = 11;
   if (camera) {
-    // Calculate the ortho size based on current engine size
+    // Calculate the ortho size based on the desired timeline height
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-    camera.orthoTop = engine.getRenderHeight() / 12 / orthoScaler;
-    camera.orthoBottom = -(engine.getRenderHeight() / 12 / orthoScaler);
-    camera.orthoLeft = -(engine.getRenderWidth() / 12 / orthoScaler);
-    camera.orthoRight = engine.getRenderWidth() / 12 / orthoScaler;
+    camera.orthoTop = orthoScaler;
+    camera.orthoBottom = -orthoScaler;
+    camera.orthoLeft = -(orthoScaler * (canvas.width / canvas.height));
+    camera.orthoRight = orthoScaler * (canvas.width / canvas.height);
   }
 
   // Create a GUI
@@ -102,12 +103,12 @@ const createScene = async () => {
   title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   advancedTexture.addControl(title);
 
-  return { scene, engine };
+  return { scene, engine, orthoScaler };
 };
 
 // When the DOM is ready, run the createScene function
 window.addEventListener("DOMContentLoaded", async function () {
-  const { scene, engine } = await createScene();
+  const { scene, engine, orthoScaler } = await createScene();
   // Start the render loop
   engine.runRenderLoop(function () {
     scene.render();
@@ -116,6 +117,13 @@ window.addEventListener("DOMContentLoaded", async function () {
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
     engine.resize();
+    const scene = engine.scenes[0];
+    const camera = scene.cameras[0];
+    // use the ortho scaler to adjust the ortho size on resize
+    camera.orthoTop = orthoScaler;
+    camera.orthoBottom = -orthoScaler;
+    camera.orthoLeft = -(orthoScaler * (engine.getRenderWidth() / engine.getRenderHeight()));
+    camera.orthoRight = orthoScaler * (engine.getRenderWidth() / engine.getRenderHeight());
   });
 
   // A simple function that can be called from FileMaker to make a change in the scene
