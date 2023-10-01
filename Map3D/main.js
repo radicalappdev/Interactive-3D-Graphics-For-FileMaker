@@ -4,8 +4,9 @@ import sampleData from "/data/ohio-demo-01.json";
 
 console.log("main.js loaded");
 
-const createScene = async (data) => {
+const createScene = async (data, svg) => {
   console.log("data", data);
+  console.log("svg", svg);
   // get the canvas from the DOM
   const canvas = document.getElementById("bjsCanvas");
 
@@ -57,12 +58,12 @@ window.addEventListener("DOMContentLoaded", async function () {
   });
 
   // Call this from FileMaker to populate the boxes with data OR call it if we are not in FileMaker to use the sample data
-  this.window.populateMap = async (data) => {
+  this.window.populateMap = async (data, svg) => {
     if (typeof data === "string") {
       data = JSON.parse(data);
     }
 
-    const { scene: newScene, engine: newEnging } = await createScene(data);
+    const { scene: newScene, engine: newEnging } = await createScene(data, svg);
     engine = newEnging;
     scene = newScene;
     // Start the render loop
@@ -73,10 +74,12 @@ window.addEventListener("DOMContentLoaded", async function () {
 
   // Wait 1 second, then populate the timeline with sample data
   // This should give FileMaker time to inject the FileMaker object
-  setTimeout(() => {
+  setTimeout(async () => {
     if (!this.window.FileMaker) {
       // If we are not in FileMaker, populate the scene with sample data
-      this.window.populateMap(sampleData);
+      // Also use the svg file from the public folder
+      const svg = await fetch("/usa-oh.svg").then((res) => res.text());
+      this.window.populateMap(sampleData, svg);
     }
   }, 1000);
 });
