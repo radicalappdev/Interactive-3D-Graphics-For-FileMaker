@@ -86,13 +86,13 @@ const createScene = async () => {
     const itemTime = itemDate.getTime();
     const itemPosition = Math.round((itemTime - dateStart.getTime()) / day);
 
-    const eventMesh = BABYLON.MeshBuilder.CreateSphere(item.name, { diameter: 0.5, segments: 32 }, scene);
+    const eventMesh = BABYLON.MeshBuilder.CreateSphere(item.date, { diameter: 0.5, segments: 32 }, scene);
     timeline.addChild(eventMesh);
     eventMesh.position.y = -itemPosition * timelineScaler;
     eventMesh.material = item.type === "milestone" ? milestoneMat : versionMat;
 
     // Create a textblock for the date
-    const date = new GUI.TextBlock(item.name + "-date");
+    const date = new GUI.TextBlock(item.date + "-date");
     date.text = item.date;
     date.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
     date.color = "black";
@@ -189,6 +189,41 @@ const createScene = async () => {
   // get the linked card
   const firstEventCard = advancedTexture.getControlByName(firstEvent.name + "-card");
   firstEventCard.isVisible = true;
+  activeEventCard = firstEventCard;
+
+  // When pressing down , change the active event
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") {
+      if (activeIndex > 0) {
+        activeIndex--;
+        const activeEvent = timeline.getChildren()[activeIndex];
+        activeEvent.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
+        activeEventMesh.scaling = new BABYLON.Vector3(1, 1, 1);
+        activeEventMesh = activeEvent;
+
+        if (activeEventCard) {
+          activeEventCard.isVisible = false;
+        }
+        activeEventCard = advancedTexture.getControlByName(activeEvent.name + "-card");
+        activeEventCard.isVisible = true;
+      }
+    }
+    if (event.key === "ArrowDown") {
+      if (activeIndex < timeline.getChildren().length - 1) {
+        activeIndex++;
+        const activeEvent = timeline.getChildren()[activeIndex];
+        activeEvent.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
+        activeEventMesh.scaling = new BABYLON.Vector3(1, 1, 1);
+        activeEventMesh = activeEvent;
+
+        if (activeEventCard) {
+          activeEventCard.isVisible = false;
+        }
+        activeEventCard = advancedTexture.getControlByName(activeEvent.name + "-card");
+        activeEventCard.isVisible = true;
+      }
+    }
+  });
 
   return { scene, engine, orthoScaler };
 };
