@@ -101,8 +101,6 @@ const createScene = async (data, svg) => {
   // console.log("svg", svg);
   // get the canvas from the DOM
 
-  let lastColor = null;
-  let lastMesh = null;
   const canvas = document.getElementById("bjsCanvas");
 
   // Create the enging and scene
@@ -134,7 +132,7 @@ const createScene = async (data, svg) => {
   tooltip.cornerRadius = 10;
   tooltip.width = "200px";
   tooltip.height = "80px";
-  // tooltip.isVisible = false;
+  tooltip.isVisible = false;
   advancedTexture.addControl(tooltip);
 
   const tooltipText = new GUI.TextBlock("tooltipText");
@@ -143,6 +141,15 @@ const createScene = async (data, svg) => {
   tooltipText.color = "black";
   tooltipText.fontSize = "24px";
   tooltip.addControl(tooltipText);
+
+  const selectedCircle = new GUI.Ellipse("selectedCircle");
+  selectedCircle.width = "30px";
+  selectedCircle.height = "30px";
+  selectedCircle.color = "black";
+  selectedCircle.thickness = 1;
+  selectedCircle.background = "white";
+  selectedCircle.isVisible = false;
+  advancedTexture.addControl(selectedCircle);
 
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
@@ -271,12 +278,8 @@ const createScene = async (data, svg) => {
         tooltip.isVisible = false;
         tooltipText.text = "";
 
-        if (lastMesh && lastColor) {
-          lastMesh.material.diffuseColor = BABYLON.Color3.FromHexString(lastColor);
-        }
-        lastColor = material.diffuseColor.toHexString();
-        material.diffuseColor = BABYLON.Color3.FromHexString("#e2e8f0");
-        lastMesh = extrudedMesh;
+        selectedCircle.linkWithMesh(extrudedMesh);
+        selectedCircle.isVisible = true;
 
         // Start the animation
         scene.beginAnimation(camera, 0, animationDuration, false);
@@ -358,6 +361,7 @@ const createScene = async (data, svg) => {
           tooltip.isVisible = false;
           tooltipText.text = "";
           title.text = "Select a county";
+          selectedCircle.isVisible = false;
 
           // Start the animation
           scene.beginAnimation(camera, 0, animationDuration, false);
