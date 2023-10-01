@@ -35,61 +35,53 @@ const createScene = async () => {
   const dayCount = Math.round((dateEnd.getTime() - dateStart.getTime()) / day);
   console.log(dayCount);
 
-  const timelineMaterial = new BABYLON.StandardMaterial("timeline-material", scene);
-  timelineMaterial.diffuseColor = BABYLON.Color3.FromHexString("#e2e8f0");
-  timelineMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+  const timelineMat = new BABYLON.StandardMaterial("timeline-material", scene);
+  timelineMat.diffuseColor = BABYLON.Color3.FromHexString("#e2e8f0");
+  timelineMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
-  const monthMaterial = new BABYLON.StandardMaterial("month-material", scene);
-  monthMaterial.diffuseColor = BABYLON.Color3.FromHexString("#94a3b8");
-  monthMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+  const milestoneMat = new BABYLON.StandardMaterial("milestone-material", scene);
+  milestoneMat.diffuseColor = BABYLON.Color3.FromHexString("#2d98da");
+  milestoneMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
-  const timeline = new BABYLON.Mesh("timeline", scene);
-  const tube = BABYLON.MeshBuilder.CreateTube(
-    "tube",
-    { path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0.05, 0, 0)], radius: 0.05, tessellation: 16, cap: BABYLON.Mesh.CAP_ALL, updatable: true },
+  const versionMat = new BABYLON.StandardMaterial("version-material", scene);
+  versionMat.diffuseColor = BABYLON.Color3.FromHexString("#8854d0");
+  versionMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+
+  const timelineScaler = 0.05;
+  console.log("x pos", dayCount * timelineScaler);
+  // Create a line to act as the timeline
+  const timeline = BABYLON.MeshBuilder.CreateTube(
+    "timeline",
+    { path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(dayCount * timelineScaler, 0, 0)], radius: 0.1, tessellation: 64 },
     scene
   );
-  tube.material = timelineMaterial;
+  timeline.material = timelineMat;
 
-  for (let i = 0; i < dayCount; i++) {
-    const clone = tube.clone();
-    timeline.addChild(clone);
-    // set the clone name to the date it represents
-    clone.name = new Date(dateStart.getTime() + i * day).toISOString().split("T")[0];
-    clone.position.x = i * 0.05;
-    // if the date is the first of the month, use the month mat
-    if (clone.name.split("-")[2] === "01") {
-      clone.material = monthMaterial;
+  // For each item in data, create a sphere on the timeline
+  // Position the sphere based on the date
+  // if type is "milestone", use the milestone material
+  // if type is "version", use the version material
+
+  const milestoneMeshes = [];
+  const versionMeshes = [];
+
+  projectData.forEach((item) => {
+    const itemDate = new Date(item.date);
+    const itemTime = itemDate.getTime();
+    const itemPosition = Math.round((itemTime - dateStart.getTime()) / day);
+
+    const sphere = BABYLON.MeshBuilder.CreateSphere(item.name, { diameter: 0.5, segments: 32 }, scene);
+    sphere.position.x = itemPosition * timelineScaler;
+    sphere.material = item.type === "milestone" ? milestoneMat : versionMat;
+
+    if (item.type === "milestone") {
+      milestoneMeshes.push(sphere);
+    } else {
+      versionMeshes.push(sphere);
     }
-    clone.actionManager = new BABYLON.ActionManager(scene);
-    clone.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(
-        {
-          trigger: BABYLON.ActionManager.OnPointerOverTrigger,
-          parameter: clone
-        },
-        () => {
-          console.log("date", clone.name);
-          BABYLON.Animation.CreateAndStartAnimation("scale-up", clone, "scaling", 60, 6, clone.scaling, new BABYLON.Vector3(1, 2, 2), 0);
-        }
-      )
-    );
-    clone.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(
-        {
-          trigger: BABYLON.ActionManager.OnPointerOutTrigger,
-          parameter: clone
-        },
-        () => {
-          BABYLON.Animation.CreateAndStartAnimation("scale-down", clone, "scaling", 60, 6, clone.scaling, new BABYLON.Vector3(1, 1, 1), 0);
-        }
-      )
-    );
-  }
+  });
 
-  timeline.position.x = -2;
-  // position the timeline so it's centered on the x-axis
-  timeline.position.x = -dayCount * 0.05 * 0.5;
+  console.log(milestoneMeshes, versionMeshes);
 
   // Create a GUI
   // First, create a fullscreen UI using the AdvancedDynamicTexture
