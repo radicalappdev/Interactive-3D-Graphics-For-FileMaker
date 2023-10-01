@@ -100,6 +100,9 @@ const createScene = async (data, svg) => {
   // console.log("data", data);
   // console.log("svg", svg);
   // get the canvas from the DOM
+
+  let lastColor = null;
+  let lastMesh = null;
   const canvas = document.getElementById("bjsCanvas");
 
   // Create the enging and scene
@@ -196,6 +199,7 @@ const createScene = async (data, svg) => {
     };
 
     let extrudedMesh = BABYLON.MeshBuilder.ExtrudeShape("ext", options, scene);
+    extrudedMesh.name = id;
 
     // Create a material for the mesh
     const material = new BABYLON.StandardMaterial("material", scene);
@@ -203,7 +207,6 @@ const createScene = async (data, svg) => {
     material.diffuseColor = BABYLON.Color3.FromHexString(color);
     material.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
     material.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-    // material.emissiveIntensity = 0.01;
 
     extrudedMesh.material = material;
     extrudedMesh.convertToFlatShadedMesh();
@@ -268,6 +271,13 @@ const createScene = async (data, svg) => {
         tooltip.isVisible = false;
         tooltipText.text = "";
 
+        if (lastMesh && lastColor) {
+          lastMesh.material.diffuseColor = BABYLON.Color3.FromHexString(lastColor);
+        }
+        lastColor = material.diffuseColor.toHexString();
+        material.diffuseColor = BABYLON.Color3.FromHexString("#e2e8f0");
+        lastMesh = extrudedMesh;
+
         // Start the animation
         scene.beginAnimation(camera, 0, animationDuration, false);
       })
@@ -276,10 +286,8 @@ const createScene = async (data, svg) => {
     //  on mouse over
     extrudedMesh.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (evt) => {
-        console.log("Mouse over", id, value);
-        extrudedMesh.position.y = +0.1;
-
         tooltip.linkWithMesh(extrudedMesh);
+        tooltip.linkOffsetY = -100;
         tooltip.isVisible = true;
         tooltipText.text = id;
       })
@@ -288,8 +296,6 @@ const createScene = async (data, svg) => {
     //  on mouse out
     extrudedMesh.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (evt) => {
-        console.log("Mouse out", id, value);
-        extrudedMesh.position.y = 0;
         tooltip.isVisible = false;
         tooltipText.text = "";
       })
