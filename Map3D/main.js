@@ -111,9 +111,9 @@ const createScene = async (data, svg) => {
 
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
-  camera.position = new BABYLON.Vector3(0, 3, -5);
   camera.attachControl(canvas, true); // Attach the camera controls to the canvas
-  camera.setTarget(BABYLON.Vector3.Zero());
+  camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+  camera.position = new BABYLON.Vector3(1, 5, -6);
   camera.lowerRadiusLimit = 2;
   camera.upperRadiusLimit = 10;
 
@@ -209,7 +209,7 @@ const createScene = async (data, svg) => {
         const keyFrames = [
           {
             frame: 0,
-            value: cam.target.clone() // Initial position of the camera's target
+            value: camera.target.clone() // Initial position of the camera's target
           },
           {
             frame: animationDuration,
@@ -222,10 +222,10 @@ const createScene = async (data, svg) => {
         animation.setEasingFunction(easingFunction);
 
         // Attach the animation to the camera
-        cam.animations.push(animation);
+        camera.animations.push(animation);
 
         // Start the animation
-        scene.beginAnimation(cam, 0, animationDuration, false);
+        scene.beginAnimation(camera, 0, animationDuration, false);
       })
     );
 
@@ -256,6 +256,64 @@ const createScene = async (data, svg) => {
   // loop through the paths array and extrude each path
   pathsArray.forEach((path) => {
     extrudedPathsGroup.addChild(extrudePath(path));
+  });
+
+  // Rotate the group so it's facing the camera - important! This must be done before applying the bounding offsets
+  extrudedPathsGroup.rotation.y = -Math.PI / 2;
+  // get the bounds of the extruded paths group
+  const bounds = extrudedPathsGroup.getHierarchyBoundingVectors();
+  // Calculate an offset to center the group
+  const offsetX = (bounds.max.x - bounds.min.x) / 2 + bounds.min.x;
+  const offsetY = 0;
+  const offsetZ = (bounds.max.z - bounds.min.z) / 2 + bounds.min.z;
+
+  // Move the group to the center of the scene
+  extrudedPathsGroup.position = new BABYLON.Vector3(-offsetX, -offsetY, -offsetZ);
+
+  // log a line when the user presses esc
+  // Define animation parameters
+  const animationDuration = 15; // in frames
+  const easingFunction = new BABYLON.QuadraticEase();
+  easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+
+  // Create an animation to smoothly transition the camera's target position
+  const animation = new BABYLON.Animation(
+    "LookAtAnimation", // Animation name
+    "target", // Property to animate
+    60, // Frames per second
+    BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  );
+
+  // Register the onKeyboardObservable event to listen for the "Escape" key press
+  scene.onKeyboardObservable.add((kbInfo) => {
+    switch (kbInfo.type) {
+      case BABYLON.KeyboardEventTypes.KEYDOWN:
+        if (kbInfo.event.key === "Escape") {
+          // Create keyframes for the animation to reset the camera's target to (0, 0, 0)
+          const keyFrames = [
+            {
+              frame: 0,
+              value: camera.target.clone() // Initial position of the camera's target
+            },
+            {
+              frame: animationDuration,
+              value: new BABYLON.Vector3(0, 0, 0) // Desired target position
+            }
+          ];
+
+          // Assign the keyframes to the animation
+          animation.setKeys(keyFrames);
+          animation.setEasingFunction(easingFunction);
+
+          // Attach the animation to the camera
+          camera.animations.push(animation);
+
+          // Start the animation
+          scene.beginAnimation(camera, 0, animationDuration, false);
+        }
+        break;
+    }
   });
 
   return { scene, engine };
