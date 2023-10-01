@@ -79,6 +79,9 @@ const createScene = async () => {
   timeline.material = timelineMat;
   timeline.position.y = (dayCount * timelineScaler) / 2;
 
+  let activeEventMesh = null;
+  let activeEventCard = null;
+
   projectData.forEach((item) => {
     const itemDate = new Date(item.date);
     const itemTime = itemDate.getTime();
@@ -147,9 +150,23 @@ const createScene = async () => {
     cardType.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     card.addControl(cardType);
 
-    if (item.date != "2020-08-01") {
-      card.isVisible = false;
-    }
+    card.isVisible = false;
+    // if (item.date != "2020-08-01") {
+    // }
+    // When we click the event mesh, show the card
+    eventMesh.actionManager = new BABYLON.ActionManager(scene);
+    eventMesh.actionManager.registerAction(
+      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function (evt) {
+        if (activeEventCard) {
+          activeEventCard.isVisible = false;
+          activeEventMesh.scaling = new BABYLON.Vector3(1, 1, 1);
+        }
+        card.isVisible = true;
+        activeEventCard = card;
+        activeEventMesh = eventMesh;
+        eventMesh.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
+      })
+    );
   });
 
   // Calculate ortho bounds to fit the timeline
