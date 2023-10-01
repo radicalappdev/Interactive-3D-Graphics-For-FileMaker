@@ -5,6 +5,14 @@ import sampleData from "/data/project-timeline.json";
 console.log("main.js loaded");
 
 const createScene = async (data) => {
+  // This will control the overall scale of the timeline
+  const timelineScaler = 0.025;
+
+  // Some hack state code to keep track of the active event
+  let activeIndex = 0;
+  let activeEventMesh = null;
+  let activeEventCard = null;
+
   // get the canvas from the DOM
   const canvas = document.getElementById("bjsCanvas");
 
@@ -50,8 +58,6 @@ const createScene = async (data) => {
   versionMat.diffuseColor = BABYLON.Color3.FromHexString("#C7303E");
   versionMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
-  const timelineScaler = 0.025;
-
   const timeline = BABYLON.MeshBuilder.CreateTube(
     "timeline",
     { path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, -dayCount * timelineScaler, 0)], radius: 0.1, tessellation: 64 },
@@ -59,10 +65,6 @@ const createScene = async (data) => {
   );
   timeline.material = timelineMat;
   timeline.position.y = (dayCount * timelineScaler) / 2;
-
-  let activeIndex = 0;
-  let activeEventMesh = null;
-  let activeEventCard = null;
 
   data.forEach((item) => {
     const itemDate = new Date(item.date);
@@ -84,23 +86,20 @@ const createScene = async (data) => {
     date.height = "100%";
     date.width = "100%";
     advancedTexture.addControl(date);
-    date.linkWithMesh(eventMesh);
+    date.linkWithMesh(eventMesh); // important! link the textblock to the mesh AFTER adding it to the advanced texture
     date.linkOffsetX = -120;
 
     // Create a card that we can show on the right side
     const card = new GUI.Rectangle(eventMesh.name + "-card");
-    console.log(card.name);
     card.width = "600px";
     card.height = "130px";
     card.cornerRadius = 20;
     card.color = "#1e293b";
     card.thickness = 1;
     card.background = "#e2e8f0";
-
     advancedTexture.addControl(card);
-    card.linkWithMesh(eventMesh);
+    card.linkWithMesh(eventMesh); // important! link the card to the mesh AFTER adding it to the advanced texture
     card.linkOffsetX = card.widthInPixels / 2 + 40;
-    // card.linkOffsetY = card.heightInPixels / 2 - 40;
 
     // In the card, add text blocks for title and type
     const cardTitle = new GUI.TextBlock(item.title + "-title");
@@ -132,10 +131,9 @@ const createScene = async (data) => {
     cardType.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
     cardType.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     card.addControl(cardType);
+    card.isVisible = false; // hide the card by default
 
-    card.isVisible = false;
-
-    // When we click the event mesh, show the card
+    // Show an active state for the mesh and card when we click on the event mesh
     eventMesh.actionManager = new BABYLON.ActionManager(scene);
     eventMesh.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function (evt) {
@@ -164,17 +162,15 @@ const createScene = async (data) => {
     camera.orthoRight = orthoScaler * (canvas.width / canvas.height);
   }
 
-  // Select the first event in the timeline
-
+  // Select the first event in the timeline when the scene loads
   const firstEvent = timeline.getChildren()[activeIndex];
   firstEvent.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
   activeEventMesh = firstEvent;
-  // get the linked card
   const firstEventCard = advancedTexture.getControlByName(firstEvent.name + "-card");
   firstEventCard.isVisible = true;
   activeEventCard = firstEventCard;
 
-  // When pressing down , change the active event
+  // Use the arrow keys to navigate the timeline
   window.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp") {
       if (activeIndex > 0) {
@@ -244,8 +240,12 @@ window.addEventListener("DOMContentLoaded", async function () {
     });
   };
 
-  if (!this.window.FileMaker) {
-    // If we are not in FileMaker, populate the scene with sample data
-    this.window.populateTimeline(sampleData);
-  }
+  // Wait 1 second, then populate the timeline with sample data
+  // This should give FileMaker time to inject the FileMaker object
+  setTimeout(() => {
+    if (!this.window.FileMaker) {
+      // If we are not in FileMaker, populate the scene with sample data
+      this.window.populateTimeline(sampleData);
+    }
+  }, 1000);
 });

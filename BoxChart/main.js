@@ -248,8 +248,12 @@ window.addEventListener("DOMContentLoaded", async function () {
     });
   };
 
-  if (!this.window.FileMaker) {
-    // If we are not in FileMaker, populate the boxes with sample data
-    this.window.populateBoxes(sampleData);
-  }
+  // Wait 1 second, then populate the timeline with sample data
+  // This should give FileMaker time to inject the FileMaker object
+  setTimeout(() => {
+    if (!this.window.FileMaker) {
+      // If we are not in FileMaker, populate the scene with sample data
+      this.window.populateBoxes(sampleData);
+    }
+  }, 1000);
 });
