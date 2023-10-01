@@ -14,6 +14,27 @@ const createScene = async () => {
   scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
+  // Create a GUI
+  // First, create a fullscreen UI using the AdvancedDynamicTexture
+  const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
+
+  // Then add a textblock to the overlay.
+  const title = new GUI.TextBlock("gui-title");
+  title.text = "Timeline";
+  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+  title.color = "black";
+  title.fontSize = "32px";
+  title.fontWeight = "bold";
+  title.height = "100%";
+  title.width = "100%";
+  title.paddingTop = "20px";
+  title.paddingBottom = "16px";
+  title.paddingLeft = "16px";
+  title.paddingRight = "16px";
+  title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  advancedTexture.addControl(title);
+
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
   camera.position = new BABYLON.Vector3(0, 0, -22);
@@ -67,6 +88,19 @@ const createScene = async () => {
     timeline.addChild(eventMesh);
     eventMesh.position.y = -itemPosition * timelineScaler;
     eventMesh.material = item.type === "milestone" ? milestoneMat : versionMat;
+
+    // Create a textblock for the date
+    const date = new GUI.TextBlock(item.name + "-date");
+    date.text = item.date;
+    date.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+    date.color = "black";
+    date.fontSize = "24px";
+    date.fontWeight = "bold";
+    date.height = "100%";
+    date.width = "100%";
+    advancedTexture.addControl(date);
+    date.linkWithMesh(eventMesh);
+    date.linkOffsetX = -120;
   });
 
   // Calculate ortho bounds to fit the timeline
@@ -81,27 +115,6 @@ const createScene = async () => {
     camera.orthoLeft = -(orthoScaler * (canvas.width / canvas.height));
     camera.orthoRight = orthoScaler * (canvas.width / canvas.height);
   }
-
-  // Create a GUI
-  // First, create a fullscreen UI using the AdvancedDynamicTexture
-  const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
-
-  // Then add a textblock to the overlay.
-  const title = new GUI.TextBlock("gui-title");
-  title.text = "Timeline";
-  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
-  title.color = "black";
-  title.fontSize = "32px";
-  title.fontWeight = "bold";
-  title.height = "100%";
-  title.width = "100%";
-  title.paddingTop = "20px";
-  title.paddingBottom = "16px";
-  title.paddingLeft = "16px";
-  title.paddingRight = "16px";
-  title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-  title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-  advancedTexture.addControl(title);
 
   return { scene, engine, orthoScaler };
 };
