@@ -4,6 +4,6 @@ import { viteSingleFile } from "vite-plugin-singlefile";
 export default defineConfig({
   plugins: [viteSingleFile()],
   server: {
-    port: 3034
+    port: 3035
   }
 });
