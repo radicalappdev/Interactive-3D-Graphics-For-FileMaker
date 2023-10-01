@@ -11,20 +11,21 @@ const createScene = async () => {
   // Create the enging and scene
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
-  scene.clearColor = BABYLON.Color3.FromHexString("#1e293b");
+  scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
-  camera.position = new BABYLON.Vector3(0, 3, -5);
+  camera.position = new BABYLON.Vector3(0, 0, -22);
   camera.attachControl(canvas, true); // Attach the camera controls to the canvas
-  camera.setTarget(BABYLON.Vector3.Zero()); // Target the camera to scene origin. You could also target a mesh, or something else
   camera.lowerRadiusLimit = 2;
-  camera.upperRadiusLimit = 20;
+  camera.upperRadiusLimit = 30;
 
   // // Create a basic light
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-  light.intensity = 1.2;
+  light.intensity = 0.8;
+  const light2 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, -1, 0), scene);
+  light2.intensity = 0.8;
 
   const dateStart = new Date(projectData[0].date);
   const dateEnd = new Date(projectData[projectData.length - 1].date);
@@ -48,7 +49,6 @@ const createScene = async () => {
   versionMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
   const timelineScaler = 0.025;
-  console.log("x pos", dayCount * timelineScaler);
 
   const timeline = BABYLON.MeshBuilder.CreateTube(
     "timeline",
@@ -56,17 +56,30 @@ const createScene = async () => {
     scene
   );
   timeline.material = timelineMat;
+  timeline.position.y = (dayCount * timelineScaler) / 2;
 
   projectData.forEach((item) => {
     const itemDate = new Date(item.date);
     const itemTime = itemDate.getTime();
     const itemPosition = Math.round((itemTime - dateStart.getTime()) / day);
 
-    const sphere = BABYLON.MeshBuilder.CreateSphere(item.name, { diameter: 0.5, segments: 32 }, scene);
-    timeline.addChild(sphere);
-    sphere.position.y = -itemPosition * timelineScaler;
-    sphere.material = item.type === "milestone" ? milestoneMat : versionMat;
+    const eventMesh = BABYLON.MeshBuilder.CreateSphere(item.name, { diameter: 0.5, segments: 32 }, scene);
+    timeline.addChild(eventMesh);
+    eventMesh.position.y = -itemPosition * timelineScaler;
+    eventMesh.material = item.type === "milestone" ? milestoneMat : versionMat;
   });
+
+  // calculate a orthoScaler that will make the timeline fit the screen in orthographic mode
+
+  const orthoScaler = 11;
+  if (camera) {
+    // Calculate the ortho size based on current engine size
+    camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+    camera.orthoTop = engine.getRenderHeight() / 12 / orthoScaler;
+    camera.orthoBottom = -(engine.getRenderHeight() / 12 / orthoScaler);
+    camera.orthoLeft = -(engine.getRenderWidth() / 12 / orthoScaler);
+    camera.orthoRight = engine.getRenderWidth() / 12 / orthoScaler;
+  }
 
   // Create a GUI
   // First, create a fullscreen UI using the AdvancedDynamicTexture
