@@ -1,0 +1,45 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 600;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+#bjsCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 2rem);
+  padding: none;
+  outline: none;
+}
+
+.credit {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: 0.8rem;
+  height: 2rem;
+  width: 100vw;
+  display: flex;
+  background-color: #f24c4c;
+  color: white;
+  justify-content: center;
+  align-items: center;
+}
+
+.creditLink {
+  color: white;
+  text-decoration: underline;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+}
