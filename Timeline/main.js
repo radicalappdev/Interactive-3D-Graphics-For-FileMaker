@@ -101,6 +101,55 @@ const createScene = async () => {
     advancedTexture.addControl(date);
     date.linkWithMesh(eventMesh);
     date.linkOffsetX = -120;
+
+    // Create a card that we can show on the right side
+    const card = new GUI.Rectangle("card");
+    card.width = "600px";
+    card.height = "130px";
+    card.cornerRadius = 20;
+    card.color = "#1e293b";
+    card.thickness = 1;
+    card.background = "#e2e8f0";
+
+    advancedTexture.addControl(card);
+    card.linkWithMesh(eventMesh);
+    card.linkOffsetX = card.widthInPixels / 2 + 40;
+    // card.linkOffsetY = card.heightInPixels / 2 - 40;
+
+    // In the card, add text blocks for title and type
+    const cardTitle = new GUI.TextBlock(item.title + "-title");
+    cardTitle.text = item.title;
+    cardTitle.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+    cardTitle.color = "black";
+    cardTitle.fontSize = "40px";
+    cardTitle.height = "100%";
+    cardTitle.width = "100%";
+    cardTitle.paddingTop = "20px";
+    cardTitle.paddingBottom = "16px";
+    cardTitle.paddingLeft = "16px";
+    cardTitle.paddingRight = "16px";
+    cardTitle.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    cardTitle.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    card.addControl(cardTitle);
+
+    const cardType = new GUI.TextBlock(item.type + "-type");
+    cardType.text = "#" + item.type;
+    cardType.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+    cardType.color = "black";
+    cardType.fontSize = "32px";
+    cardType.height = "100%";
+    cardType.width = "100%";
+    cardType.paddingTop = "20px";
+    cardType.paddingBottom = "16px";
+    cardType.paddingLeft = "16px";
+    cardType.paddingRight = "16px";
+    cardType.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+    cardType.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    card.addControl(cardType);
+
+    if (item.date != "2020-08-01") {
+      card.isVisible = false;
+    }
   });
 
   // Calculate ortho bounds to fit the timeline
