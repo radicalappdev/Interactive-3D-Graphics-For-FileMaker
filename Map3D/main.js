@@ -111,6 +111,35 @@ const createScene = async (data, svg) => {
   // Create a GUI
   // First, create a fullscreen UI using the AdvancedDynamicTexture
   const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
+  // Add a text block to the top center
+  const title = new GUI.TextBlock("title");
+  title.text = "Select a county";
+  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+  title.color = "black";
+  title.fontSize = "36px";
+  title.fontWeight = "bold";
+  title.paddingTop = "20px";
+  title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+  advancedTexture.addControl(title);
+
+  const tooltip = new GUI.Rectangle("tooltip");
+  tooltip.text = "Select a county";
+  tooltip.background = "#ffffff";
+  tooltip.color = "black";
+  tooltip.thickness = 1;
+  tooltip.cornerRadius = 10;
+  tooltip.width = "200px";
+  tooltip.height = "80px";
+  // tooltip.isVisible = false;
+  advancedTexture.addControl(tooltip);
+
+  const tooltipText = new GUI.TextBlock("tooltipText");
+  tooltipText.text = "Select a county";
+  tooltipText.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
+  tooltipText.color = "black";
+  tooltipText.fontSize = "24px";
+  tooltip.addControl(tooltipText);
 
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
@@ -234,6 +263,11 @@ const createScene = async (data, svg) => {
         // Attach the animation to the camera
         camera.animations.push(animation);
 
+        const formatted = id + " - " + value.toLocaleString();
+        title.text = formatted;
+        tooltip.isVisible = false;
+        tooltipText.text = "";
+
         // Start the animation
         scene.beginAnimation(camera, 0, animationDuration, false);
       })
@@ -244,6 +278,10 @@ const createScene = async (data, svg) => {
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (evt) => {
         console.log("Mouse over", id, value);
         extrudedMesh.position.y = +0.1;
+
+        tooltip.linkWithMesh(extrudedMesh);
+        tooltip.isVisible = true;
+        tooltipText.text = id;
       })
     );
 
@@ -252,6 +290,8 @@ const createScene = async (data, svg) => {
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (evt) => {
         console.log("Mouse out", id, value);
         extrudedMesh.position.y = 0;
+        tooltip.isVisible = false;
+        tooltipText.text = "";
       })
     );
 
@@ -309,6 +349,10 @@ const createScene = async (data, svg) => {
           // Attach the animation to the camera
           camera.animations.push(animation);
 
+          tooltip.isVisible = false;
+          tooltipText.text = "";
+          title.text = "Select a county";
+
           // Start the animation
           scene.beginAnimation(camera, 0, animationDuration, false);
         }
@@ -326,6 +370,7 @@ window.addEventListener("DOMContentLoaded", async function () {
 
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
+    if (!engine) return;
     engine.resize();
   });
 

@@ -215,6 +215,7 @@ window.addEventListener("DOMContentLoaded", async function () {
 
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
+    if (!engine) return;
     engine.resize();
     const scene = engine.scenes[0];
     const camera = scene.cameras[0];

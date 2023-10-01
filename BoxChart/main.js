@@ -230,6 +230,7 @@ window.addEventListener("DOMContentLoaded", async function () {
 
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
+    if (!engine) return;
     engine.resize();
   });
 
