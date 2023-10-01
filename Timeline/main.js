@@ -77,6 +77,7 @@ const createScene = async () => {
   timeline.material = timelineMat;
   timeline.position.y = (dayCount * timelineScaler) / 2;
 
+  let activeIndex = 0;
   let activeEventMesh = null;
   let activeEventCard = null;
 
@@ -104,7 +105,8 @@ const createScene = async () => {
     date.linkOffsetX = -120;
 
     // Create a card that we can show on the right side
-    const card = new GUI.Rectangle("card");
+    const card = new GUI.Rectangle(eventMesh.name + "-card");
+    console.log(card.name);
     card.width = "600px";
     card.height = "130px";
     card.cornerRadius = 20;
@@ -178,6 +180,15 @@ const createScene = async () => {
     camera.orthoLeft = -(orthoScaler * (canvas.width / canvas.height));
     camera.orthoRight = orthoScaler * (canvas.width / canvas.height);
   }
+
+  // Select the first event in the timeline
+
+  const firstEvent = timeline.getChildren()[activeIndex];
+  firstEvent.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
+  activeEventMesh = firstEvent;
+  // get the linked card
+  const firstEventCard = advancedTexture.getControlByName(firstEvent.name + "-card");
+  firstEventCard.isVisible = true;
 
   return { scene, engine, orthoScaler };
 };
