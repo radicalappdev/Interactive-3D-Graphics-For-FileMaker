@@ -47,23 +47,15 @@ const createScene = async () => {
   versionMat.diffuseColor = BABYLON.Color3.FromHexString("#8854d0");
   versionMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
 
-  const timelineScaler = 0.05;
+  const timelineScaler = 0.025;
   console.log("x pos", dayCount * timelineScaler);
-  // Create a line to act as the timeline
+
   const timeline = BABYLON.MeshBuilder.CreateTube(
     "timeline",
-    { path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(dayCount * timelineScaler, 0, 0)], radius: 0.1, tessellation: 64 },
+    { path: [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, -dayCount * timelineScaler, 0)], radius: 0.1, tessellation: 64 },
     scene
   );
   timeline.material = timelineMat;
-
-  // For each item in data, create a sphere on the timeline
-  // Position the sphere based on the date
-  // if type is "milestone", use the milestone material
-  // if type is "version", use the version material
-
-  const milestoneMeshes = [];
-  const versionMeshes = [];
 
   projectData.forEach((item) => {
     const itemDate = new Date(item.date);
@@ -71,17 +63,10 @@ const createScene = async () => {
     const itemPosition = Math.round((itemTime - dateStart.getTime()) / day);
 
     const sphere = BABYLON.MeshBuilder.CreateSphere(item.name, { diameter: 0.5, segments: 32 }, scene);
-    sphere.position.x = itemPosition * timelineScaler;
+    timeline.addChild(sphere);
+    sphere.position.y = -itemPosition * timelineScaler;
     sphere.material = item.type === "milestone" ? milestoneMat : versionMat;
-
-    if (item.type === "milestone") {
-      milestoneMeshes.push(sphere);
-    } else {
-      versionMeshes.push(sphere);
-    }
   });
-
-  console.log(milestoneMeshes, versionMeshes);
 
   // Create a GUI
   // First, create a fullscreen UI using the AdvancedDynamicTexture
