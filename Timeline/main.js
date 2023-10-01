@@ -1,10 +1,10 @@
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui/2D";
-import projectData from "/data/project-timeline.json";
+import sampleData from "/data/project-timeline.json";
 
 console.log("main.js loaded");
 
-const createScene = async () => {
+const createScene = async (data) => {
   // get the canvas from the DOM
   const canvas = document.getElementById("bjsCanvas");
 
@@ -17,23 +17,6 @@ const createScene = async () => {
   // Create a GUI
   // First, create a fullscreen UI using the AdvancedDynamicTexture
   const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("overlay", true, scene);
-
-  // Then add a textblock to the overlay.
-  const title = new GUI.TextBlock("gui-title");
-  title.text = "Timeline";
-  title.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
-  title.color = "black";
-  title.fontSize = "32px";
-  title.fontWeight = "bold";
-  title.height = "100%";
-  title.width = "100%";
-  title.paddingTop = "20px";
-  title.paddingBottom = "16px";
-  title.paddingLeft = "16px";
-  title.paddingRight = "16px";
-  title.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-  title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-  advancedTexture.addControl(title);
 
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
@@ -48,8 +31,8 @@ const createScene = async () => {
   const light2 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, -1, 0), scene);
   light2.intensity = 0.8;
 
-  const dateStart = new Date(projectData[0].date);
-  const dateEnd = new Date(projectData[projectData.length - 1].date);
+  const dateStart = new Date(data[0].date);
+  const dateEnd = new Date(data[data.length - 1].date);
 
   // for each day, clone the tube mesh and move it along the x-axis
   const day = 24 * 60 * 60 * 1000;
@@ -81,7 +64,7 @@ const createScene = async () => {
   let activeEventMesh = null;
   let activeEventCard = null;
 
-  projectData.forEach((item) => {
+  data.forEach((item) => {
     const itemDate = new Date(item.date);
     const itemTime = itemDate.getTime();
     const itemPosition = Math.round((itemTime - dateStart.getTime()) / day);
@@ -230,11 +213,9 @@ const createScene = async () => {
 
 // When the DOM is ready, run the createScene function
 window.addEventListener("DOMContentLoaded", async function () {
-  const { scene, engine, orthoScaler } = await createScene();
-  // Start the render loop
-  engine.runRenderLoop(function () {
-    scene.render();
-  });
+  let engine;
+  let scene;
+  let orthoScaler;
 
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
@@ -247,4 +228,24 @@ window.addEventListener("DOMContentLoaded", async function () {
     camera.orthoLeft = -(orthoScaler * (engine.getRenderWidth() / engine.getRenderHeight()));
     camera.orthoRight = orthoScaler * (engine.getRenderWidth() / engine.getRenderHeight());
   });
+
+  this.window.populateTimeline = async (data) => {
+    if (typeof data === "string") {
+      data = JSON.parse(data);
+    }
+
+    const { scene: newScene, engine: newEnging, orthoScaler: newOrthoScaler } = await createScene(data);
+    engine = newEnging;
+    scene = newScene;
+    orthoScaler = newOrthoScaler;
+    // Start the render loop
+    engine.runRenderLoop(function () {
+      scene.render();
+    });
+  };
+
+  if (!this.window.FileMaker) {
+    // If we are not in FileMaker, populate the scene with sample data
+    this.window.populateTimeline(sampleData);
+  }
 });
