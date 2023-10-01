@@ -105,7 +105,7 @@ const createScene = async (data, svg) => {
   // Create the enging and scene
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
-  scene.clearColor = BABYLON.Color3.FromHexString("#94a3b8");
+  scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
   // Create a GUI
@@ -123,13 +123,14 @@ const createScene = async (data, svg) => {
   camera.position = new BABYLON.Vector3(1, 5, -6);
 
   // // Create a basic light
-  const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-  light.intensity = 1.2;
+  const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, -1), scene);
+  light.intensity = 1;
 
   // Config for the map
-  const colors = ["#ffffff", "#e1f5ff", "#c8ecff", "#a4dcff", "#8fd4ff", "#68b6eb", "#40a8e0", "#1168a7", "#1b75bc", "#2d90d1"];
+  const colors = ["#ffffff", "#fef3f3", "#fbc3c3", "#f79494", "#f46464", "#f24c4c"];
   const numberOfSegments = colors.length;
-  const heightFactor = 1;
+  const heightFactor = 2;
+  const baseHeight = 0.1;
 
   // Create an instance of the ChoroplethSegmenter class
   const choroplethSegmentor = new ChoroplethSegmentor(sampleData, numberOfSegments);
@@ -155,7 +156,7 @@ const createScene = async (data, svg) => {
     const color = colors[num - 1];
 
     // Use the number to pick a depth
-    const depth = num / heightFactor + 1;
+    const depth = num * heightFactor + baseHeight;
     const myPath = [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0.5, 0), new BABYLON.Vector3(0, depth, 0)];
     const options = {
       shape: node.points,
