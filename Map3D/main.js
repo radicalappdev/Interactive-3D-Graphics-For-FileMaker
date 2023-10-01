@@ -114,8 +114,8 @@ const createScene = async (data, svg) => {
   camera.attachControl(canvas, true); // Attach the camera controls to the canvas
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.position = new BABYLON.Vector3(1, 5, -6);
-  camera.lowerRadiusLimit = 2;
-  camera.upperRadiusLimit = 10;
+  camera.lowerRadiusLimit = 3;
+  camera.upperRadiusLimit = 15;
 
   // // Create a basic light
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
