@@ -43,6 +43,7 @@ const convertSVGPathsToBabylon = (svg) => {
 
     // Helper function to update the current point based on the command and its parameters
     function updateCurrentPoint(command, parameters) {
+      console.log("shrug, ignoring commands", command);
       const coordinates = parameters.split(/[ ,]/).map(parseFloat);
 
       let index = 0;
@@ -104,7 +105,7 @@ const createScene = async (data, svg) => {
   // Create the enging and scene
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
-  scene.clearColor = BABYLON.Color3.FromHexString("#ffffff");
+  scene.clearColor = BABYLON.Color3.FromHexString("#94a3b8");
   engine.setHardwareScalingLevel(1 / window.devicePixelRatio); // used to fix the scaling issue on high DPI screens, maily mainly applies to GUI
 
   // Create a GUI
@@ -113,11 +114,13 @@ const createScene = async (data, svg) => {
 
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
+  camera.lowerBetaLimit = 0;
+  camera.upperBetaLimit = Math.PI / 2;
+  camera.lowerRadiusLimit = 3;
+  camera.upperRadiusLimit = 15;
   camera.attachControl(canvas, true); // Attach the camera controls to the canvas
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.position = new BABYLON.Vector3(1, 5, -6);
-  camera.lowerRadiusLimit = 3;
-  camera.upperRadiusLimit = 15;
 
   // // Create a basic light
   const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
@@ -147,11 +150,9 @@ const createScene = async (data, svg) => {
 
     // get the value from the entry
     const num = choroplethSegmentor.getSegment(value);
-    console.log(id, entry, num);
 
     // Use the number to pick a color from the array
     const color = colors[num - 1];
-    console.log(node.id, num, color);
 
     // Use the number to pick a depth
     const depth = num / heightFactor + 1;
