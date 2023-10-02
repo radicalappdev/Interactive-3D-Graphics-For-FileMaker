@@ -2,6 +2,8 @@
 
 This repository contains several small projects that demonstrate ways to use 3D graphics in FileMaker. These demos were created using [Babylon JS](https://www.babylonjs.com/), a JavaScript library for 3D graphics.
 
+Note: these demos were prepared on macOS. There may be some edge cases in Windows that I haven't accounted for yet.
+
 ## Instructions
 
 - Open the ExampleWidgets file in FileMaker Pro 19 or later. Each widget record contains a production-ready version of the widget. Press the "Refresh" button to load the widget into the web viewer, then run the script related to the demo (see the scripts menu).
