@@ -1,4 +1,4 @@
-# FMPlayground
+# BoxChart
 
 Multi Series Bar Chart using 3D Boxes.
 
