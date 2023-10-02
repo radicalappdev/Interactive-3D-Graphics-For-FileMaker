@@ -275,11 +275,11 @@ const createScene = async (data, svg) => {
 
         const formatted = id + " - " + value.toLocaleString();
         title.text = formatted;
-        tooltip.isVisible = false;
-        tooltipText.text = "";
+        // tooltip.isVisible = false;
+        // tooltipText.text = "";
 
-        selectedCircle.linkWithMesh(extrudedMesh);
-        selectedCircle.isVisible = true;
+        // selectedCircle.linkWithMesh(extrudedMesh);
+        // selectedCircle.isVisible = true;
 
         // Start the animation
         scene.beginAnimation(camera, 0, animationDuration, false);
@@ -287,22 +287,22 @@ const createScene = async (data, svg) => {
     );
 
     //  on mouse over
-    extrudedMesh.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (evt) => {
-        tooltip.linkWithMesh(extrudedMesh);
-        tooltip.linkOffsetY = -100;
-        tooltip.isVisible = true;
-        tooltipText.text = id;
-      })
-    );
+    // extrudedMesh.actionManager.registerAction(
+    //   new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (evt) => {
+    //     tooltip.linkWithMesh(extrudedMesh);
+    //     tooltip.linkOffsetY = -100;
+    //     tooltip.isVisible = true;
+    //     tooltipText.text = id;
+    //   })
+    // );
 
     //  on mouse out
-    extrudedMesh.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (evt) => {
-        tooltip.isVisible = false;
-        tooltipText.text = "";
-      })
-    );
+    // extrudedMesh.actionManager.registerAction(
+    //   new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (evt) => {
+    //     tooltip.isVisible = false;
+    //     tooltipText.text = "";
+    //   })
+    // );
 
     extrudedPathsGroup.addChild(extrudedMesh);
   });
@@ -358,10 +358,10 @@ const createScene = async (data, svg) => {
           // Attach the animation to the camera
           camera.animations.push(animation);
 
-          tooltip.isVisible = false;
-          tooltipText.text = "";
+          // tooltip.isVisible = false;
+          // tooltipText.text = "";
+          // selectedCircle.isVisible = false;
           title.text = "Select a county";
-          selectedCircle.isVisible = false;
 
           // Start the animation
           scene.beginAnimation(camera, 0, animationDuration, false);

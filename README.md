@@ -11,11 +11,15 @@ Note: these demos were prepared on macOS. There may be some edge cases in Window
 
 ## Demos
 
+These demos are provided as a means to spark some ideas and build excitement for using 3D in FileMaker.
+
 1. **FMPlayground** is a basic scene with a box and a text label, intended as a starting point.
 2. **BoxChart** is a multi-series bar chart based on the Categories export from FMComparison.
 3. **Timeline** is an orthographic scene with a timeline of events.
 4. **Map3D** converts an SVG map to BabylonJS meshes and colors each segment to create a 3D choropleth.
 5. **Layers3D** will convert layout objects (using clipboard data) into 3D meshes arranged in layers based on their containment and z-order.
+
+These demos are not intended to be production-ready. While you are welcome to use them as-is, you will likely need to modify them to suit your needs.
 
 ## Resources
 

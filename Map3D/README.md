@@ -1,8 +1,8 @@
-# FMPlayground
+# Map3D
 
-FileMaker x Babylon JS
+Convert an SVG Map to 3D Objects
 
-This simple project will get you started with Babylon JS in FileMaker.
+This project uses path data from an SVG map to extrude 3D shapes in a Babylon JS scene. This is a reproduction of an early prototype and is not suitable for production use.
 
 ## Getting Started
 
@@ -18,10 +18,8 @@ This simple project will get you started with Babylon JS in FileMaker.
 - index.html - the main html file
 - style.css - the main css file - just a class for the canvas
 - main.js - This file will import Babylon JS and GUI, then create a scene.
-- main-tree-shaking.js - This alternative file does the same thing as main.js It is written to import for tree shaking. See build notes
 - ExampleWidgets (parent folder) is a FileMaker file with a few examples of how to use the widgets.
 
 ## Build Notes
 
 - This project uses vite-plugin-singlefile: It has some limitations that you should be aware of. https://github.com/richardtallent/vite-plugin-singlefile#limitations
-- BabylonJS is HUGE. The main.js version of the scene code does not import for tree shaking. There is an alternate version of the scene code in the main-tree-shakng.js file that does import for tree shaking. You can switch between the two by changing the script tag in the index.html file.
