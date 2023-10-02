@@ -256,6 +256,8 @@ const createScene = async (layersData) => {
   // fetch the XML data from the sample-data folder
   // const layersData = await fetch("../sample-data/project-layers.xml").then((res) => res.text());
 
+  console.log("layersData", layersData);
+
   // parse the XML data into an XMLDocument
   const parser = new DOMParser();
   const layersDoc = parser.parseFromString(layersData, "text/xml");
@@ -482,7 +484,9 @@ window.addEventListener("DOMContentLoaded", async function () {
 
   // Resize the engine on window resize
   window.addEventListener("resize", function () {
-    engine.resize();
+    if (engine) {
+      engine.resize();
+    }
     const scene = engine.scenes[0];
     const cam = scene.cameras[0];
     cam.orthoTop = engine.getRenderHeight() / 4 / 100;
@@ -491,17 +495,8 @@ window.addEventListener("DOMContentLoaded", async function () {
     cam.orthoRight = engine.getRenderWidth() / 4 / 100;
   });
 
-  // A simple function that can be called from FileMaker to make a change in the scene
-  this.window.changeBoxColor = (data) => {
-    const parsed = JSON.parse(data);
-    console.log("changeBoxColor", parsed);
-    //  get the box material by name
-    const mat = scene.getMaterialByName("box-mat");
-    // set the color
-    mat.diffuseColor = BABYLON.Color3.FromHexString(parsed.color);
-  };
-
   this.window.populateLayers = async (data) => {
+    console.log("incoming data", data);
     // data is xml, pass it to the createScene function
     const { scene: newScene, engine: newEnging } = await createScene(data);
     engine = newEnging;
@@ -512,4 +507,14 @@ window.addEventListener("DOMContentLoaded", async function () {
       scene.render();
     });
   };
+
+  // Wait 1 second, then populate the timeline with sample data
+  // This should give FileMaker time to inject the FileMaker object
+  setTimeout(async () => {
+    if (!this.window.FileMaker) {
+      const layersData = await fetch("../sample-data/project-layers.xml").then((res) => res.text());
+      // If we are not in FileMaker, populate the scene with sample data
+      this.window.populateLayers(layersData);
+    }
+  }, 1000);
 });
