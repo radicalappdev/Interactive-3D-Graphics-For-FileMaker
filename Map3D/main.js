@@ -124,33 +124,6 @@ const createScene = async (data, svg) => {
   title.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
   advancedTexture.addControl(title);
 
-  const tooltip = new GUI.Rectangle("tooltip");
-  tooltip.text = "Select a county";
-  tooltip.background = "#ffffff";
-  tooltip.color = "black";
-  tooltip.thickness = 1;
-  tooltip.cornerRadius = 10;
-  tooltip.width = "200px";
-  tooltip.height = "80px";
-  tooltip.isVisible = false;
-  advancedTexture.addControl(tooltip);
-
-  const tooltipText = new GUI.TextBlock("tooltipText");
-  tooltipText.text = "Select a county";
-  tooltipText.fontFamily = "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif";
-  tooltipText.color = "black";
-  tooltipText.fontSize = "24px";
-  tooltip.addControl(tooltipText);
-
-  const selectedCircle = new GUI.Ellipse("selectedCircle");
-  selectedCircle.width = "30px";
-  selectedCircle.height = "30px";
-  selectedCircle.color = "black";
-  selectedCircle.thickness = 1;
-  selectedCircle.background = "white";
-  selectedCircle.isVisible = false;
-  advancedTexture.addControl(selectedCircle);
-
   // Create a camera
   const camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, BABYLON.Vector3.Zero(), scene);
   camera.lowerBetaLimit = 0;
@@ -229,6 +202,7 @@ const createScene = async (data, svg) => {
     lineMesh.rotation.z = Math.PI;
     lineMesh.rotation.y = -Math.PI / 2;
     lineMesh.position.y = depth + 0.01;
+    lineMesh.updatable = true;
 
     // add a console log when the user clicks on a extruded mesh
     const am = new BABYLON.ActionManager(scene);
@@ -275,34 +249,11 @@ const createScene = async (data, svg) => {
 
         const formatted = id + " - " + value.toLocaleString();
         title.text = formatted;
-        // tooltip.isVisible = false;
-        // tooltipText.text = "";
-
-        // selectedCircle.linkWithMesh(extrudedMesh);
-        // selectedCircle.isVisible = true;
 
         // Start the animation
         scene.beginAnimation(camera, 0, animationDuration, false);
       })
     );
-
-    //  on mouse over
-    // extrudedMesh.actionManager.registerAction(
-    //   new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, (evt) => {
-    //     tooltip.linkWithMesh(extrudedMesh);
-    //     tooltip.linkOffsetY = -100;
-    //     tooltip.isVisible = true;
-    //     tooltipText.text = id;
-    //   })
-    // );
-
-    //  on mouse out
-    // extrudedMesh.actionManager.registerAction(
-    //   new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, (evt) => {
-    //     tooltip.isVisible = false;
-    //     tooltipText.text = "";
-    //   })
-    // );
 
     extrudedPathsGroup.addChild(extrudedMesh);
   });
@@ -357,10 +308,6 @@ const createScene = async (data, svg) => {
 
           // Attach the animation to the camera
           camera.animations.push(animation);
-
-          // tooltip.isVisible = false;
-          // tooltipText.text = "";
-          // selectedCircle.isVisible = false;
           title.text = "Select a county";
 
           // Start the animation
