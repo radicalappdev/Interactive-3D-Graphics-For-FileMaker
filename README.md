@@ -21,11 +21,35 @@ These demos are provided as a means to spark some ideas and build excitement for
 
 These demos are not intended to be production-ready. While you are welcome to use them as-is, you will likely need to modify them to suit your needs.
 
-## Resources
+---
 
-- [Babylon JS documentation](https://doc.babylonjs.com/)
-- [Babylon JS Playground](https://playground.babylonjs.com/)
-- [Babylon JS Forum](https://forum.babylonjs.com/) (you can find me there as @vrhermit)
-- [Babylon JS Community Demos](https://www.babylonjs.com/community/)
+## Resources & Notes
 
-If you have questions or comments, [please contact me](https://radicalappdev.com/#workwithme).
+### Babylon JS
+
+Babylon JS is a powerful library with many features. It's the best place to start for FileMaker devs learning to add 3D to their toolbox. Here are some resources to help you get started:
+
+- [Babylon JS documentation](https://doc.babylonjs.com/) - Extensive documentation and tutorials
+- [Babylon JS Playground](https://playground.babylonjs.com/) - Get started with your own scenes
+- [Babylon JS Forum](https://forum.babylonjs.com/) Active community with many of the core team posting there daily. You can find me there as @vrhermit
+- [Babylon JS Community Demos](https://www.babylonjs.com/community/) - Get inspired and see what others are doing with Babylon JS
+  - [Xbox Design Lab](https://xboxdesignlab.xbox.com/en-us/)
+  - [Target Room Planner](https://www.target.com/room-planner/college)
+  - [Frame](https://learn.framevr.io/)
+  - [Pi](https://www.pi2e.ch/scroll/)
+
+### Other Frameworks and Tools
+
+- [Three JS](https://threejs.org/) - Another popular 3D library
+  - [A-Frame](https://aframe.io/) - A-Frame is a web framework for building virtual reality experiences. It is built on Three JS.
+  - [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction) - A React renderer for Three JS with a vibrant and creative community.
+- [PlayCanvas](https://playcanvas.com/) - A 3D game engine with a visual editor
+- [Blender](https://www.blender.org/) - Free 3D modeling software
+
+---
+
+## Shameless Plugs
+
+- Work with me [Radical App Dev](https://radicalappdev.com/#workwithme).
+- [Canvatorium](https://vrhermit.com/canvatorium/) - An experimental design lab for spatial computing
+- Where to find me [vrhermit.com/links](https://vrhermit.com/links/)
